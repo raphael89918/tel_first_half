@@ -1,0 +1,4 @@
+<launch>
+    <node name="level_planner" pkg="tel_first_half" type="level_planner_node" output="screen"/>
+    <param name="level_code" type="int" value="2" />
+</launch>
