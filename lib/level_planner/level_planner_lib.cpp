@@ -51,36 +51,6 @@ void LevelPlanner::wheel_idle_callback(const wheel_tokyo_weili::waitforidle &whe
     m_wheel_idle_msg = wheel_idle_msg;
 }
 
-void LevelPlanner::entry_color(int color, float base_speed, int pixel_threshold)
-{
-    while (abs(IMAGE_WIDTH / 2 - m_color_msg.rect[color].x_center) > pixel_threshold)
-    {
-        if (m_color_msg.rect[GROUND_RED].x_center < IMAGE_WIDTH / 2)
-            wheel_planner_msg_vel_xyz(0, -base_speed, 0);
-        else
-            wheel_planner_msg_vel_xyz(0, base_speed, 0);
-        wheel_planner_msg_init();
-        ros::spinOnce();
-    }
-}
-
-void LevelPlanner::forward_color(int color, float base_speed, int pixel_threshold)
-{
-    while (abs(IMAGE_WIDTH / 2 - m_color_msg.rect[color].x_center) > pixel_threshold)
-    {
-        if (m_color_msg.rect[GROUND_RED].x_center < IMAGE_WIDTH / 2)
-            wheel_planner_msg_vel_xyz(0, -base_speed, 0);
-        else
-            wheel_planner_msg_vel_xyz(0, base_speed, 0);
-        wheel_planner_msg_init();
-
-        wheel_planner_msg_dist_xyz(base_speed, 0, 0);
-        wheel_planner_msg_init();
-
-        ros::spinOnce();
-    }
-}
-
 void LevelPlanner::level_1()
 {
     ROS_INFO("level1");
@@ -94,26 +64,8 @@ void LevelPlanner::level_2()
 {
     ROS_INFO("level2");
 
-    wheel_planner_msg_dist_xyz(30, 0, 0);
-    wheel_planner_msg_dist_xyz(0, 20, 0);
-
-    entry_color(GROUND_RED, 0.25, 10);
-    forward_color(GROUND_RED, 0.25, 10000);
-
-    wheel_planner_msg_dist_xyz(50, 0, 0);
-    wheel_planner_msg_dist_xyz(0, -52.5, 0);
-
-    entry_color(GROUND_GREEN, 0.25, 10);
-    forward_color(GROUND_GREEN, 0.25, 10000);
-
-    wheel_planner_msg_dist_xyz(60, 0, 0);
-    wheel_planner_msg_dist_xyz(0, 42.5, 0);
-
-    entry_color(GROUND_BLUE, 0.25, 10);
-    forward_color(GROUND_BLUE, 0.25, 10000);
-
-    wheel_planner_msg_dist_xyz(45, 0, 0);
-    wheel_planner_msg_dist_xyz(0, -10, 0);
+    //level_2_vision_strategy();
+    level_2_distance_strategy();
 
     m_current_state = LevelState::LEVEL_3;
 }
@@ -125,6 +77,96 @@ void LevelPlanner::level_3()
 
     */
     m_current_state = LevelState::TERMINATE;
+}
+
+void LevelPlanner::level_2_vision_strategy()
+{
+    ROS_INFO("level2 vision strategy");
+    wheel_planner_msg_dist_xyz(30, 0, 0);
+    wheel_planner_msg_dist_xyz(0, 20, 0);
+
+    entry_color(GROUND_RED, 0.25, 100);
+    forward_color(GROUND_RED, 0.25, 100, 10000);
+
+    wheel_planner_msg_dist_xyz(80, 0, 0);
+    wheel_planner_msg_dist_xyz(0, -52.5, 0);
+
+    entry_color(GROUND_GREEN, 0.25, 100);
+    forward_color(GROUND_GREEN, 0.25, 100, 10000);
+
+    wheel_planner_msg_dist_xyz(60, 0, 0);
+    wheel_planner_msg_dist_xyz(0, 42.5, 0);
+
+    entry_color(GROUND_BLUE, 0.25, 100);
+    forward_color(GROUND_BLUE, 0.25, 100, 10000);
+
+    wheel_planner_msg_dist_xyz(45, 0, 0);
+    wheel_planner_msg_dist_xyz(0, -10, 0);
+}
+
+void LevelPlanner::level_2_distance_strategy()
+{
+    ROS_INFO("level2 distance strategy");
+
+    wheel_planner_msg_dist_xyz(20, 0, 0);
+    wheel_planner_msg_dist_xyz(0, 20, 0);
+
+    wheel_planner_msg_dist_xyz(50, 0, 0);
+
+    wheel_planner_msg_dist_xyz(70, 0, 0);
+    wheel_planner_msg_dist_xyz(0, -37.5, 0);
+
+    wheel_planner_msg_dist_xyz(45, 0, 0);
+
+    wheel_planner_msg_dist_xyz(60, 0, 0);
+    wheel_planner_msg_dist_xyz(0, 32.5, 0);
+
+    wheel_planner_msg_dist_xyz(40, 0, 0);
+
+    wheel_planner_msg_dist_xyz(40, 0, 0);
+    wheel_planner_msg_dist_xyz(0, -15, 0);
+
+    wheel_planner_msg_dist_xyz(55, 0, 0);
+}
+
+void LevelPlanner::entry_color(int color, float base_speed, int mid_pixel_threshold)
+{
+    ros::spinOnce();
+
+    while (abs(IMAGE_WIDTH / 2 - m_color_msg.rect[color].x_center) > mid_pixel_threshold)
+    {
+        if (m_color_msg.rect[color].x_center < IMAGE_WIDTH / 2)
+            wheel_planner_msg_vel_xyz(0, -base_speed, 0);
+        else if (m_color_msg.rect[color].x_center > IMAGE_WIDTH / 2)
+            wheel_planner_msg_vel_xyz(0, base_speed, 0);
+
+        ros::Duration(0.1).sleep();
+        ros::spinOnce();
+    }
+    wheel_planner_msg_init();
+}
+
+void LevelPlanner::forward_color(int color, float base_speed, int pixel_threshold, int complete_area_threshold)
+{
+    ros::spinOnce();
+
+    // while (abs(IMAGE_WIDTH / 2 - m_color_msg.rect[color].x_center) > pixel_threshold)
+    // {
+    //     if (m_color_msg.rect[color].x_center < IMAGE_WIDTH / 2)
+    //         wheel_planner_msg_vel_xyz(0, -base_speed, 0);
+    //     else if (m_color_msg.rect[color].x_center > IMAGE_WIDTH / 2)
+    //         wheel_planner_msg_vel_xyz(0, base_speed, 0);
+
+    //     ros::Duration(0.1).sleep();
+    //     ros::spinOnce();
+    // }
+    while (m_color_msg.rect[color].rect_size > complete_area_threshold)
+    {
+        wheel_planner_msg_vel_xyz(base_speed, 0, 0);
+        ros::Duration(0.1).sleep();
+        ros::spinOnce();
+    }
+    wheel_planner_msg_init();
 }
 
 void LevelPlanner::wheel_planner_msg_init()

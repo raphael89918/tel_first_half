@@ -55,8 +55,11 @@ private:
     void level_2();
     void level_3();
 
-    void entry_color(int color, float base_speed, int pixel_threshold);
-    void forward_color(int color, float base_speed, int pixel_threshold);
+    void level_2_vision_strategy();
+    void level_2_distance_strategy();
+
+    void entry_color(int color, float base_speed, int mid_pixel_threshold);
+    void forward_color(int color, float base_speed, int mid_pixel_threshold, int complete_area_threshold);
 
     void wheel_planner_msg_init();
     void wheel_planner_msg_dist_xyz(const float x, const float y, const float z);
