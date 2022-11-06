@@ -5,13 +5,28 @@ LevelPlanner::LevelPlanner()
     ROS_INFO("default constructor");
 }
 
+LevelPlanner::LevelPlanner(ros::NodeHandle &nh)
+    : m_nh(nh)
+{
+    ROS_INFO("for test, not init level");
+    m_color_sub = m_nh.subscribe("/ground_color", 1, &LevelPlanner::ground_color_callback, this);
+    m_wheel_wait = m_nh.subscribe("/wheel/waitforidle", 1, &LevelPlanner::wheel_idle_callback, this);
+    m_wheel_pub = m_nh.advertise<wheel_tokyo_weili::wheel_planner>("/wheel/planner", 1);
+
+    ros::Duration(10).sleep();
+    wheel_planner_msg_init();
+}
+
 LevelPlanner::LevelPlanner(LevelState level, ros::NodeHandle &nh)
     : m_nh(nh), m_current_state(level)
 {
     ROS_INFO("level constructed");
     m_color_sub = m_nh.subscribe("/ground_color", 1, &LevelPlanner::ground_color_callback, this);
     m_wheel_wait = m_nh.subscribe("/wheel/waitforidle", 1, &LevelPlanner::wheel_idle_callback, this);
-    m_wheel_pub = m_nh.advertise<wheel_tokyo_weili::wheel_planner>("/wheel/wheel_planner", 1);
+    m_wheel_pub = m_nh.advertise<wheel_tokyo_weili::wheel_planner>("/wheel/planner", 1);
+
+    ros::Duration(10).sleep();
+    wheel_planner_msg_init();
 }
 
 LevelPlanner::~LevelPlanner()
@@ -41,6 +56,32 @@ void LevelPlanner::execute()
     ROS_INFO("Terminated");
 }
 
+void LevelPlanner::test_wheel(float base_speed, double secs)
+{
+    wheel_planner_msg_init();
+
+    wheel_planner_msg_dist_xyz(5, 0, 0);
+    ROS_INFO("forward 5cm");
+
+    wheel_planner_msg_vel_xyz_duration(base_speed, 0, 0, secs);
+    ROS_INFO("FRONT");
+
+    wheel_planner_msg_vel_xyz_duration(-base_speed, 0, 0, secs);
+    ROS_INFO("BACK");
+
+    wheel_planner_msg_vel_xyz_duration(0, base_speed, 0, secs);
+    ROS_INFO("RIGHT");
+
+    wheel_planner_msg_vel_xyz_duration(0, -base_speed, 0, secs);
+    ROS_INFO("LEFT");
+
+    wheel_planner_msg_vel_xyz_duration(0, 0, base_speed, secs);
+    ROS_INFO("SPIN_RIGHT");
+
+    wheel_planner_msg_vel_xyz_duration(0, 0, -base_speed, secs);
+    ROS_INFO("SPIN_LEFT");
+}
+
 void LevelPlanner::ground_color_callback(const ground_color::GroundColor &color_msg)
 {
     m_color_msg = color_msg;
@@ -63,8 +104,9 @@ void LevelPlanner::level_1()
 void LevelPlanner::level_2()
 {
     ROS_INFO("level2");
+    wheel_planner_msg_init();
 
-    //level_2_vision_strategy();
+    // level_2_vision_strategy();
     level_2_distance_strategy();
 
     m_current_state = LevelState::LEVEL_3;
@@ -140,7 +182,6 @@ void LevelPlanner::entry_color(int color, float base_speed, int mid_pixel_thresh
         else if (m_color_msg.rect[color].x_center > IMAGE_WIDTH / 2)
             wheel_planner_msg_vel_xyz(0, base_speed, 0);
 
-        ros::Duration(0.1).sleep();
         ros::spinOnce();
     }
     wheel_planner_msg_init();
@@ -163,7 +204,6 @@ void LevelPlanner::forward_color(int color, float base_speed, int pixel_threshol
     while (m_color_msg.rect[color].rect_size > complete_area_threshold)
     {
         wheel_planner_msg_vel_xyz(base_speed, 0, 0);
-        ros::Duration(0.1).sleep();
         ros::spinOnce();
     }
     wheel_planner_msg_init();
@@ -188,10 +228,12 @@ void LevelPlanner::wheel_planner_msg_dist_xyz(const float x, const float y, cons
     m_wheel_planner_msg.distance_z = z;
     m_wheel_pub.publish(m_wheel_planner_msg);
     wheel_planner_msg_init();
-    while (m_wheel_idle_msg.wait == true)
+
+    do
     {
+        ROS_INFO("waiting for idle");
         ros::spinOnce();
-    }
+    } while (m_wheel_idle_msg.wait == false);
 }
 
 void LevelPlanner::wheel_planner_msg_vel_xyz(const float x, const float y, const float z)
@@ -202,15 +244,33 @@ void LevelPlanner::wheel_planner_msg_vel_xyz(const float x, const float y, const
     m_wheel_pub.publish(m_wheel_planner_msg);
 }
 
+void LevelPlanner::wheel_planner_msg_vel_xyz_duration(const float x, const float y, const float z, const double secs)
+{
+    ros::Time startTime = ros::Time::now();
+    ros::Duration loopDuration(secs);
+
+    wheel_planner_msg_init();
+
+    while (ros::Time::now() < startTime + loopDuration)
+    {
+        wheel_planner_msg_vel_xyz(x, y, z);
+        ros::spinOnce();
+    }
+
+    wheel_planner_msg_init();
+}
+
 void LevelPlanner::wheel_planner_msg_far_left()
 {
     m_wheel_planner_msg.far_left = true;
     m_wheel_pub.publish(m_wheel_planner_msg);
     wheel_planner_msg_init();
-    while (m_wheel_idle_msg.wait == true)
+
+    do
     {
+        ROS_INFO("waiting for idle");
         ros::spinOnce();
-    }
+    } while (m_wheel_idle_msg.wait == false);
 }
 
 void LevelPlanner::wheel_planner_msg_far_right()
@@ -218,8 +278,10 @@ void LevelPlanner::wheel_planner_msg_far_right()
     m_wheel_planner_msg.far_right = true;
     m_wheel_pub.publish(m_wheel_planner_msg);
     wheel_planner_msg_init();
-    while (m_wheel_idle_msg.wait == true)
+
+    do
     {
+        ROS_INFO("waiting for idle");
         ros::spinOnce();
-    }
+    } while (m_wheel_idle_msg.wait == false);
 }

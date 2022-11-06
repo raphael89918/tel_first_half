@@ -1,6 +1,5 @@
 <launch>
-    <node name="level_planner" pkg="tel_first_half" type="level_planner_node" output="screen"/>
-    <param name="level_code" type="int" value="2" />
+    <node name="test_wheel_node" pkg="tel_first_half" type="test_wheel_node" output="screen"/>
 
     <node name="motorCtrl_node" pkg="wheel_tokyo_weili" type="motorCtrl_node" output="screen"/>
     <node name="encoderCounter_node" pkg="wheel_tokyo_weili" type="encoderCounter_node" output="screen"/>
@@ -23,5 +22,9 @@
     <param name = "port" value = "/dev/ttyACM1"/>
     <param name = "baud" value = "57600"/>
     </node>
+
+
+    <include file = "$(find realsense2_camera)/launch/rs_camera.launch"/>
+    <include file = "$(find ground_color)/launch/messenger.launch"/>
 
 </launch>

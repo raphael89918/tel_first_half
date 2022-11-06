@@ -30,10 +30,13 @@ class LevelPlanner
 {
 public:
     LevelPlanner();
+    LevelPlanner(ros::NodeHandle &nh);
     LevelPlanner(LevelState level, ros::NodeHandle &nh);
     ~LevelPlanner();
 
     void execute();
+
+    void test_wheel(float base_speed, double secs);
 
 private:
     LevelState m_current_state;
@@ -64,6 +67,7 @@ private:
     void wheel_planner_msg_init();
     void wheel_planner_msg_dist_xyz(const float x, const float y, const float z);
     void wheel_planner_msg_vel_xyz(const float x, const float y, const float z); // remember to set it zero
+    void wheel_planner_msg_vel_xyz_duration(const float x, const float y, const float z, const double secs);
     void wheel_planner_msg_far_left();
     void wheel_planner_msg_far_right();
 };
