@@ -6,5 +6,5 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
 
     LevelPlanner planner(nh);
-    planner.test_wheel(1, 2);
+    planner.test_wheel(0.35, 2);
 }

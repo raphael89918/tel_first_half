@@ -65,11 +65,13 @@ private:
     void forward_color(int color, float base_speed, int mid_pixel_threshold, int complete_area_threshold);
 
     void wheel_planner_msg_init();
+    
     void wheel_planner_msg_dist_xyz(const float x, const float y, const float z);
     void wheel_planner_msg_vel_xyz(const float x, const float y, const float z); // remember to set it zero
     void wheel_planner_msg_vel_xyz_duration(const float x, const float y, const float z, const double secs);
     void wheel_planner_msg_far_left();
     void wheel_planner_msg_far_right();
+    void wheel_planner_msg_stop();
 };
 
 #endif
