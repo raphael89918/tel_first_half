@@ -6,6 +6,10 @@
     <node name="encoderCounter_node" pkg="wheel_tokyo_weili" type="encoderCounter_node" output="screen"/>
     <node name="wheel_planner_node" pkg="wheel_tokyo_weili" type="wheel_planner_node" output="screen"/>
 
+    <include file = "$(find realsense2_camera)/launch/rs_camera.launch"/>
+    <include file = "$(find ground_color)/launch/messenger.launch"/>
+
+
     <node
         ns="arduino_motor"
         pkg="rosserial_python"
