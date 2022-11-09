@@ -75,7 +75,7 @@ private:
     void entry_color(int color, float base_speed, int mid_pixel_threshold);
     void forward_color(int color, float base_speed, int mid_pixel_threshold, int complete_area_threshold);
 
-    float clamp(float value, float min, float max);
+    double clamp(const double value, const double min, const double max);
 
     void wheel_planner_msg_init();
 

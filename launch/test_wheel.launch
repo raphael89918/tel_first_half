@@ -3,13 +3,15 @@
 
     <param name="/level_planner/level_2/strategy" type="int" value="0" />
     <param name="/level_planner/level_2/base_speed" type="double" value="0.25" />
-    <param name="/level_planner/level_2/area_threshold" type="int" value="10000" />
-    <param name="/level_planner/level_2/pixel_threshold" type="int" value="100" />
-    <param name="/level_planner/level_2/entry/p" type="double" value="0.001" />
-    <param name="/level_planner/level_2/entry/i" type="double" value="0.0005" />
-    <param name="/level_planner/level_2/entry/d" type="double" value="0.0" />
-    <param name="/level_planner/xy_clamp_max" type="float" value="0.5" />
-    <param name="/level_planner/xy_clamp_min" type="float" value="-0.5" />
+    <param name="/level_planner/level_2/area_threshold" type="int" value="5000" />
+    <param name="/level_planner/level_2/pixel_threshold" type="int" value="10" />
+
+    <param name="/level_planner/level_2/entry_xy/p" type="double" value="0.0006" />
+    <param name="/level_planner/level_2/entry_xy/i" type="double" value="0.000005" />
+    <param name="/level_planner/level_2/entry_xy/d" type="double" value="0.000000" />
+
+    <param name="/level_planner/xy_clamp_max" type="double" value="0.5" />
+    <param name="/level_planner/xy_clamp_min" type="double" value="-0.5" />
 
 
     <node name="motorCtrl_node" pkg="wheel_tokyo_weili" type="motorCtrl_node" output="screen"/>

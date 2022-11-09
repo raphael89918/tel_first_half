@@ -5,9 +5,9 @@
     <param name="/level_planner/level_2/strategy" type="int" value="0" />
     <param name="/level_planner/level_2/base_speed" type="double" value="0.25" />
     <param name="/level_planner/level_2/area_threshold" type="int" value="10000" />
-    <param name="/level_planner/level_2/pixel_threshold" type="int" value="100" />
-    <param name="/level_planner/level_2/entry_p" type="double" value="0.001" />
-    <param name="/level_planner/level_2/enrty_i" type="double" value="0.0005" />
+    <param name="/level_planner/level_2/pixel_threshold" type="int" value="20" />
+    <param name="/level_planner/level_2/entry_p" type="double" value="0.15" />
+    <param name="/level_planner/level_2/enrty_i" type="double" value="0.04" />
     <param name="/level_planner/level_2/entry_d" type="double" value="0.0" />
 
     <node name="motorCtrl_node" pkg="wheel_tokyo_weili" type="motorCtrl_node" output="screen"/>

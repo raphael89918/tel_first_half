@@ -239,31 +239,36 @@ void LevelPlanner::entry_color(int color, float base_speed, int mid_pixel_thresh
 
 void LevelPlanner::entry_color(int color, int mid_pixel_threshold)
 {
+    double clamp_max = 0.5, clamp_min = -0.5;
     double p = 0.001, i = 0.0005, d = 0;
-    float clamp_max = 0.5, clamp_min = -0.5;
 
-    m_nh.getParamCached("/level_planner/level_2/vision/entry/p", p);
-    m_nh.getParamCached("/level_planner/level_2/vision/entry/i", i);
-    m_nh.getParamCached("/level_planner/level_2/vision/entry/d", d);
-    m_nh.getParamCached("/level_planner/level_2/xy_clamp_max", clamp_max);
-    m_nh.getParamCached("/level_planner/level_2/xy_clamp_min", clamp_min);
+    m_nh.getParamCached("/level_planner/level_2/entry_xy/p", p);
+    m_nh.getParamCached("/level_planner/level_2/entry_xy/i", i);
+    m_nh.getParamCached("/level_planner/level_2/entry_xy/d", d);
+
+    m_nh.getParamCached("/level_planner/xy_clamp_max", clamp_max);
+    m_nh.getParamCached("/level_planner/xy_clamp_min", clamp_min);
 
     PID pid(p, i, d);
 
+    ROS_INFO("PID: %f %f %f", p, i, d);
+
     ros::spinOnce();
-    double offset = IMAGE_WIDTH / 2 - m_color_msg.rect[color].x_center;
+    double offset = IMAGE_WIDTH / 2.0 - m_color_msg.rect[color].x_center;
+    double speed = 0;
 
     do
     {
+        offset = IMAGE_WIDTH / 2.0 - m_color_msg.rect[color].x_center;
+        speed = pid.calculate(offset);
+        wheel_planner_msg_vel_xyz(0, -clamp(speed, clamp_min, clamp_max), 0);
+        ROS_INFO("Offset: %lf, Not clamped Speed: %lf, Clamped Speed: %lf, Color area: %d", offset, speed, clamp(speed, clamp_min, clamp_max), m_color_msg.rect[color].rect_size);
+
         ros::spinOnce();
-
-        offset = IMAGE_WIDTH / 2 - m_color_msg.rect[color].x_center;
-        double speed = pid.calculate(offset) / 255;
-        wheel_planner_msg_vel_xyz(0, -clamp(speed, clamp_max, clamp_min), 0);
-        ROS_INFO("Offset: %lf, Not clamped Speed: %lf, Color area: %d", offset, speed, m_color_msg.rect[color].rect_size);
-
         m_rate.sleep();
     } while (abs(offset) > mid_pixel_threshold);
+
+    wheel_planner_msg_stop();
 }
 
 void LevelPlanner::forward_color(int color, float base_speed, int pixel_threshold, int complete_area_threshold)
@@ -290,7 +295,7 @@ void LevelPlanner::forward_color(int color, float base_speed, int pixel_threshol
     wheel_planner_msg_stop();
 }
 
-float LevelPlanner::clamp(float value, float min, float max)
+double LevelPlanner::clamp(const double value, const double min, const double max)
 {
     if (value < min)
         return min;
@@ -393,6 +398,8 @@ void LevelPlanner::wheel_planner_msg_far_right()
 
 void LevelPlanner::wheel_planner_msg_stop()
 {
+    ROS_INFO("Stopping");
     wheel_planner_msg_init();
     m_wheel_pub.publish(m_wheel_planner_msg);
+    ROS_INFO("Stopped");
 }
