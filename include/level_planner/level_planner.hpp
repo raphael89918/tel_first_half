@@ -5,6 +5,7 @@
 #include <ground_color/GroundColor.h>
 #include <wheel_tokyo_weili/wheel_planner.h>
 #include <wheel_tokyo_weili/waitforidle.h>
+#include "pid/pid.hpp"
 
 const int IMAGE_WIDTH = 1280;
 const int IMAGE_HEIGHT = 720;

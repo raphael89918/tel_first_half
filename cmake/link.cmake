@@ -1,5 +1,6 @@
 target_link_libraries(level_planner_node
 level_planner_lib
+pid_lib
 ${catkin_LIBRARIES}
 )
 
