@@ -7,7 +7,7 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
 
     int level_code = 1;
-    nh.getParam("level_code", level_code);
+    nh.getParam("/level_planner/level_code", level_code);
 
     std::unordered_map<int, LevelState> code_map{{1, LevelState::LEVEL_1}, {2, LevelState::LEVEL_2}, {3, LevelState::LEVEL_3}};
 

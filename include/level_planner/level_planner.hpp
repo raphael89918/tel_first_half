@@ -27,6 +27,12 @@ enum class LevelState
     TERMINATE
 };
 
+enum Level_2_Strategy
+{
+    LEVEL_2_VISION = 0,
+    LEVEL_2_DISTANCE = 1
+};
+
 class LevelPlanner
 {
 public:
@@ -47,8 +53,10 @@ private:
     ros::Subscriber m_wheel_wait;
     ros::Publisher m_wheel_pub;
 
+    ros::Rate m_rate;
+
     ground_color::GroundColor m_color_msg;
-    
+
     wheel_tokyo_weili::waitforidle m_wheel_idle_msg;
     wheel_tokyo_weili::wheel_planner m_wheel_planner_msg;
 
@@ -66,7 +74,7 @@ private:
     void forward_color(int color, float base_speed, int mid_pixel_threshold, int complete_area_threshold);
 
     void wheel_planner_msg_init();
-    
+
     void wheel_planner_msg_dist_xyz(const float x, const float y, const float z);
     void wheel_planner_msg_vel_xyz(const float x, const float y, const float z); // remember to set it zero
     void wheel_planner_msg_vel_xyz_duration(const float x, const float y, const float z, const double secs);

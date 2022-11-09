@@ -19,7 +19,6 @@ public:
     void set(double kp, double ki, double kd);
 
     double calculate(double error, double dt);
-    double imcremental_calculate(double error, double dt);
 
 private:
     double m_kp;
