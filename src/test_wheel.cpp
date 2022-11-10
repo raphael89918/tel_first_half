@@ -5,10 +5,12 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "level_planner");
     ros::NodeHandle nh;
 
-    LevelPlanner planner(nh);
-    int pixel_threshold = 100;
+    double base_speed = 0.25, secs = 0.5;
 
-    nh.getParamCached("/level_planner/level_2/pixel_threshold", pixel_threshold);
-    // planner.test_wheel(0.35, 2);
-    planner.test_entry_color(GROUND_RED, pixel_threshold);
+    nh.getParamCached("/level_planner/test/speed", base_speed);
+    nh.getParamCached("/level_planner/test/step_duration", secs);
+
+    LevelPlanner planner(nh);
+
+    planner.test_wheel(base_speed, secs);
 }

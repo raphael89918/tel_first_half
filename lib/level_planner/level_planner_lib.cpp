@@ -88,9 +88,9 @@ void LevelPlanner::test_wheel(float base_speed, double secs)
     wheel_planner_msg_stop();
 }
 
-void LevelPlanner::test_entry_color(int color, int mid_pixel_threshold)
+void LevelPlanner::test_entry_color(int color)
 {
-    entry_color(color, mid_pixel_threshold);
+    entry_color(color);
 }
 
 void LevelPlanner::ground_color_callback(const ground_color::GroundColor &color_msg)
@@ -167,24 +167,24 @@ void LevelPlanner::level_2_vision_strategy()
     wheel_planner_msg_dist_xyz(0, 20, 0);
     ROS_INFO("RIGHT");
 
-    entry_color(GROUND_RED, base_speed, pixel_threshold);
-    forward_color(GROUND_RED, base_speed, pixel_threshold, area_threashold);
+    entry_color(GROUND_RED);
+    forward_color(GROUND_RED);
 
     wheel_planner_msg_dist_xyz(70, 0, 0);
     ROS_INFO("FRONT");
     wheel_planner_msg_dist_xyz(0, -37.5, 0);
     ROS_INFO("LEFT");
 
-    entry_color(GROUND_GREEN, base_speed, pixel_threshold);
-    forward_color(GROUND_GREEN, base_speed, pixel_threshold, area_threashold);
+    entry_color(GROUND_GREEN);
+    forward_color(GROUND_GREEN);
 
     wheel_planner_msg_dist_xyz(60, 0, 0);
     ROS_INFO("FRONT");
     wheel_planner_msg_dist_xyz(0, 32.5, 0);
     ROS_INFO("RIGHT");
 
-    entry_color(GROUND_BLUE, base_speed, pixel_threshold);
-    forward_color(GROUND_BLUE, base_speed, pixel_threshold, area_threashold);
+    entry_color(GROUND_BLUE);
+    forward_color(GROUND_BLUE);
 
     wheel_planner_msg_dist_xyz(40, 0, 0);
     ROS_INFO("FRONT");
@@ -219,33 +219,17 @@ void LevelPlanner::level_2_distance_strategy()
     wheel_planner_msg_stop();
 }
 
-void LevelPlanner::entry_color(int color, float base_speed, int mid_pixel_threshold)
-{
-    do
-    {
-        ros::spinOnce();
-
-        ROS_INFO("Center: %d", m_color_msg.rect[color].x_center);
-        if (m_color_msg.rect[color].x_center < IMAGE_WIDTH / 2)
-            wheel_planner_msg_vel_xyz(0, -base_speed, 0);
-        else if (m_color_msg.rect[color].x_center > IMAGE_WIDTH / 2)
-            wheel_planner_msg_vel_xyz(0, base_speed, 0);
-
-        m_rate.sleep();
-    } while (abs(IMAGE_WIDTH / 2 - m_color_msg.rect[color].x_center) > mid_pixel_threshold);
-
-    wheel_planner_msg_stop();
-}
-
-void LevelPlanner::entry_color(int color, int mid_pixel_threshold)
+void LevelPlanner::entry_color(int color)
 {
     double clamp_max = 0.5, clamp_min = -0.5;
     double p = 0.001, i = 0.0005, d = 0;
+    int mid_pixel_threshold = 10;
 
     m_nh.getParamCached("/level_planner/level_2/entry_xy/p", p);
     m_nh.getParamCached("/level_planner/level_2/entry_xy/i", i);
     m_nh.getParamCached("/level_planner/level_2/entry_xy/d", d);
 
+    m_nh.getParamCached("/level_planner/level_2/pixel_threshold", mid_pixel_threshold);
     m_nh.getParamCached("/level_planner/xy_clamp_max", clamp_max);
     m_nh.getParamCached("/level_planner/xy_clamp_min", clamp_min);
 
@@ -271,7 +255,7 @@ void LevelPlanner::entry_color(int color, int mid_pixel_threshold)
     wheel_planner_msg_stop();
 }
 
-void LevelPlanner::forward_color(int color, float base_speed, int pixel_threshold, int complete_area_threshold)
+void LevelPlanner::forward_color(int color)
 {
     // while (abs(IMAGE_WIDTH / 2 - m_color_msg.rect[color].x_center) > pixel_threshold)
     // {
@@ -283,6 +267,11 @@ void LevelPlanner::forward_color(int color, float base_speed, int pixel_threshol
     //     ros::Duration(0.1).sleep();
     //     ros::spinOnce();
     // }
+    int complete_area_threshold = 5000, base_speed = 0.25;
+
+    m_nh.getParamCached("/level_planner/level_2/base_speed", base_speed);
+    m_nh.getParamCached("/level_planner/level_2/area_threshold", complete_area_threshold);
+
     do
     {
         ros::spinOnce();

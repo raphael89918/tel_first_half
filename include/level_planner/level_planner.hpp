@@ -44,7 +44,7 @@ public:
     void execute();
 
     void test_wheel(float base_speed, double secs);
-    void test_entry_color(int color, int mid_pixel_threshold);
+    void test_entry_color(int color);
 
 private:
     LevelState m_current_state;
@@ -71,9 +71,8 @@ private:
     void level_2_vision_strategy();
     void level_2_distance_strategy();
 
-    void entry_color(int color, int mid_pixel_threshold);
-    void entry_color(int color, float base_speed, int mid_pixel_threshold);
-    void forward_color(int color, float base_speed, int mid_pixel_threshold, int complete_area_threshold);
+    void entry_color(int color);
+    void forward_color(int color);
 
     double clamp(const double value, const double min, const double max);
 
