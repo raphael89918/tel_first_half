@@ -215,7 +215,7 @@ void LevelPlanner::entry_color(int color)
 {
     double clamp_max = 0.5, clamp_min = -0.5;
     double p = 0.001, i = 0.0005, d = 0;
-    int mid_pixel_threshold = 10;
+    int mid_pixel_threshold = 10, min_area = 5000;
 
     m_nh.getParamCached("/level_planner/level_2/entry_xy/p", p);
     m_nh.getParamCached("/level_planner/level_2/entry_xy/i", i);
@@ -224,6 +224,8 @@ void LevelPlanner::entry_color(int color)
     m_nh.getParamCached("/level_planner/level_2/pixel_threshold", mid_pixel_threshold);
     m_nh.getParamCached("/level_planner/xy_clamp_max", clamp_max);
     m_nh.getParamCached("/level_planner/xy_clamp_min", clamp_min);
+
+    m_nh.getParamCached("/level_planner/level_2/entry_color/min_area", min_area);
 
     PID pid(p, i, d);
 
@@ -235,6 +237,12 @@ void LevelPlanner::entry_color(int color)
 
     while (abs(offset) > mid_pixel_threshold)
     {
+        if (m_color_msg.rect[color].rect_size < min_area)
+        {
+            ROS_ERROR("Entry color not found");
+            exit(1);
+        }
+
         offset = IMAGE_WIDTH / 2.0 - m_color_msg.rect[color].x_center;
         speed = pid.calculate(offset);
         wheel_planner_msg_vel_xyz(0, -clamp(speed, clamp_min, clamp_max), 0);
