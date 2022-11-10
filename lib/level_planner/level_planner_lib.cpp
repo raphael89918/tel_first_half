@@ -153,14 +153,6 @@ void LevelPlanner::level_3()
 
 void LevelPlanner::level_2_vision_strategy()
 {
-    double base_speed = 0.25;
-    int area_threashold = 10000;
-    int pixel_threshold = 100;
-
-    m_nh.getParamCached("/level_planner/level_2/vision/base_speed", base_speed);
-    m_nh.getParamCached("/level_planner/level_2/vision/area_threashold", area_threashold);
-    m_nh.getParamCached("/level_planner/level_2/vision/pixel_threshold", pixel_threshold);
-
     ROS_INFO("level2 vision strategy");
     wheel_planner_msg_dist_xyz(20, 0, 0);
     ROS_INFO("FRONT");
@@ -241,7 +233,7 @@ void LevelPlanner::entry_color(int color)
     double offset = IMAGE_WIDTH / 2.0 - m_color_msg.rect[color].x_center;
     double speed = 0;
 
-    do
+    while (abs(offset) > mid_pixel_threshold)
     {
         offset = IMAGE_WIDTH / 2.0 - m_color_msg.rect[color].x_center;
         speed = pid.calculate(offset);
@@ -250,7 +242,7 @@ void LevelPlanner::entry_color(int color)
 
         ros::spinOnce();
         m_rate.sleep();
-    } while (abs(offset) > mid_pixel_threshold);
+    }
 
     wheel_planner_msg_stop();
 }
@@ -272,15 +264,13 @@ void LevelPlanner::forward_color(int color)
     m_nh.getParamCached("/level_planner/level_2/base_speed", base_speed);
     m_nh.getParamCached("/level_planner/level_2/area_threshold", complete_area_threshold);
 
-    do
+    while (m_color_msg.rect[color].rect_size > complete_area_threshold)
     {
-        ros::spinOnce();
-
         wheel_planner_msg_vel_xyz(base_speed, 0, 0);
 
+        ros::spinOnce();
         m_rate.sleep();
-    } while (m_color_msg.rect[color].rect_size > complete_area_threshold);
-
+    }
     wheel_planner_msg_stop();
 }
 
