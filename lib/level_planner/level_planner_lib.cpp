@@ -7,7 +7,7 @@ LevelPlanner::LevelPlanner()
 }
 
 LevelPlanner::LevelPlanner(ros::NodeHandle &nh)
-    : m_nh(nh), m_rate(60)
+    : m_nh(nh), m_rate(30)
 {
     ROS_INFO("for test, not init level");
     m_color_sub = m_nh.subscribe("/ground_color", 1, &LevelPlanner::ground_color_callback, this);
@@ -16,13 +16,13 @@ LevelPlanner::LevelPlanner(ros::NodeHandle &nh)
 
     ros::Duration(10).sleep();
 
-    wheel_planner_msg_stop();
+    wheel_planner_msg_init();
 
     ROS_INFO("test is up");
 }
 
 LevelPlanner::LevelPlanner(LevelState level, ros::NodeHandle &nh)
-    : m_current_state(level), m_nh(nh), m_rate(60)
+    : m_current_state(level), m_nh(nh), m_rate(30)
 {
     ROS_INFO("level constructed");
     m_color_sub = m_nh.subscribe("/ground_color", 1, &LevelPlanner::ground_color_callback, this);
@@ -31,7 +31,7 @@ LevelPlanner::LevelPlanner(LevelState level, ros::NodeHandle &nh)
 
     ros::Duration(10).sleep();
 
-    wheel_planner_msg_stop();
+    wheel_planner_msg_init();
 
     ROS_INFO("Level Planner is up!!");
 }
@@ -65,8 +65,6 @@ void LevelPlanner::execute()
 
 void LevelPlanner::test_wheel_dist(float dist, double delay)
 {
-    wheel_planner_msg_stop();
-
     wheel_planner_msg_dist_xyz(dist, 0, 0);
     ROS_INFO("FRONT");
     ros::Duration(delay).sleep();
@@ -94,7 +92,7 @@ void LevelPlanner::test_wheel_dist(float dist, double delay)
 
 void LevelPlanner::test_wheel(float dist, float base_speed, double secs, double delay)
 {
-    wheel_planner_msg_stop();
+    wheel_planner_msg_init();
 
     wheel_planner_msg_vel_xyz_duration(base_speed, 0, 0, secs);
     ROS_INFO("FRONT");
@@ -114,7 +112,6 @@ void LevelPlanner::test_wheel(float dist, float base_speed, double secs, double 
     wheel_planner_msg_vel_xyz_duration(0, 0, -base_speed, secs);
     ROS_INFO("SPIN_LEFT");
 
-    wheel_planner_msg_stop();
     ros::Duration(delay).sleep();
 }
 
@@ -279,8 +276,6 @@ void LevelPlanner::entry_color(int color)
         ros::spinOnce();
         m_rate.sleep();
     }
-
-    wheel_planner_msg_stop();
 }
 
 void LevelPlanner::forward_color(int color)
@@ -307,7 +302,6 @@ void LevelPlanner::forward_color(int color)
         ros::spinOnce();
         m_rate.sleep();
     }
-    wheel_planner_msg_stop();
 }
 
 double LevelPlanner::clamp(const double value, const double min, const double max)
@@ -334,6 +328,8 @@ void LevelPlanner::wheel_planner_msg_init()
 
 void LevelPlanner::wheel_planner_msg_dist_xyz(const float x, const float y, const float z)
 {
+    double delay = 0.5;
+
     wheel_planner_msg_init();
 
     m_wheel_planner_msg.distance_x = x;
@@ -343,7 +339,13 @@ void LevelPlanner::wheel_planner_msg_dist_xyz(const float x, const float y, cons
 
     ROS_INFO("sended distance: %f, %f, %f", x, y, z);
 
+    m_nh.getParamCached("/level_planner/step_delay", delay);
+
+    ROS_INFO("delay: %f", delay);
+
     ros::spinOnce();
+
+    ros::Duration(delay).sleep();
 
     while (m_wheel_idle_msg.wait == false)
     {
@@ -376,8 +378,6 @@ void LevelPlanner::wheel_planner_msg_vel_xyz_duration(const float x, const float
         ros::spinOnce();
         m_rate.sleep();
     }
-
-    wheel_planner_msg_stop();
 }
 
 void LevelPlanner::wheel_planner_msg_far_left()
@@ -408,12 +408,4 @@ void LevelPlanner::wheel_planner_msg_far_right()
         ros::spinOnce();
         m_rate.sleep();
     }
-}
-
-void LevelPlanner::wheel_planner_msg_stop()
-{
-    ROS_INFO("Stopping");
-    wheel_planner_msg_init();
-    m_wheel_pub.publish(m_wheel_planner_msg);
-    ROS_INFO("Stopped");
 }

@@ -1,5 +1,5 @@
 <launch>
-    <param name="/level_planner/test/color_code" type="int" value="2" />
+    <param name="/level_planner/test/color_code" type="int" value="0" />
     <param name="/level_planner/test/speed" type="double" value="0.35" />
     <param name="/level_planner/test/dist" type="double" value="10.0" />
     <param name="/level_planner/test/duration" type="double" value="0.5" />
@@ -7,7 +7,9 @@
 
     <param name="/level_planner/level_code" type="int" value="2" />
 
-    <param name="/level_planner/level_2/strategy" type="int" value="0" />
+    <param name="/level_planner/step_delay" type="double" value="2" />
+
+    <param name="/level_planner/level_2/strategy" type="int" value="1" />
     <param name="/level_planner/level_2/base_speed" type="double" value="0.25" />
     <param name="/level_planner/level_2/area_threshold" type="int" value="5000" />
     <param name="/level_planner/level_2/pixel_threshold" type="int" value="10" />

@@ -84,7 +84,6 @@ private:
     void wheel_planner_msg_vel_xyz_duration(const float x, const float y, const float z, const double secs);
     void wheel_planner_msg_far_left();
     void wheel_planner_msg_far_right();
-    void wheel_planner_msg_stop();
 };
 
 #endif
