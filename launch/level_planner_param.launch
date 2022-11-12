@@ -1,7 +1,9 @@
 <launch>
     <param name="/level_planner/test/color_code" type="int" value="2" />
     <param name="/level_planner/test/speed" type="double" value="0.35" />
-    <param name="/level_planner/test/step_duration" type="double" value="0.5" />
+    <param name="/level_planner/test/dist" type="double" value="10.0" />
+    <param name="/level_planner/test/duration" type="double" value="0.5" />
+    <param name="/level_planner/test/delay" type="double" value="2.0" />
 
     <param name="/level_planner/level_code" type="int" value="2" />
 

@@ -43,7 +43,8 @@ public:
 
     void execute();
 
-    void test_wheel(float base_speed, double secs);
+    void test_wheel(float dist, float base_speed, double secs, double delay);
+    void test_wheel_dist(float dist, double delay);
     void test_entry_color(int color);
 
 private:

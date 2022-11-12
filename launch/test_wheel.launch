@@ -1,25 +1,14 @@
 <launch>
+    <include file="$(find tel_first_half)/launch/level_planner_param.launch" />
+    <include file = "$(find realsense2_camera)/launch/rs_camera.launch"/>
+    <include file = "$(find ground_color)/launch/messenger.launch"/>
+
     <node name="test_wheel_node" pkg="tel_first_half" type="test_wheel_node" output="screen"/>
-
-    <param name="/level_planner/level_2/strategy" type="int" value="0" />
-    <param name="/level_planner/level_2/base_speed" type="double" value="0.25" />
-    <param name="/level_planner/level_2/area_threshold" type="int" value="5000" />
-    <param name="/level_planner/level_2/pixel_threshold" type="int" value="10" />
-
-    <param name="/level_planner/level_2/entry_xy/p" type="double" value="0.0006" />
-    <param name="/level_planner/level_2/entry_xy/i" type="double" value="0.000005" />
-    <param name="/level_planner/level_2/entry_xy/d" type="double" value="0.000000" />
-
-    <param name="/level_planner/xy_clamp_max" type="double" value="0.5" />
-    <param name="/level_planner/xy_clamp_min" type="double" value="-0.5" />
-
-
     <node name="motorCtrl_node" pkg="wheel_tokyo_weili" type="motorCtrl_node" output="screen"/>
     <node name="encoderCounter_node" pkg="wheel_tokyo_weili" type="encoderCounter_node" output="screen"/>
     <node name="wheel_planner_node" pkg="wheel_tokyo_weili" type="wheel_planner_node" output="screen"/>
 
-    <include file = "$(find realsense2_camera)/launch/rs_camera.launch"/>
-    <include file = "$(find ground_color)/launch/messenger.launch"/>
+
 
     <node
         ns="arduino_motor"
