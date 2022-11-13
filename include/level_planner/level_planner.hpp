@@ -43,8 +43,9 @@ public:
 
     void execute();
 
-    void test_wheel(float dist, float base_speed, double secs, double delay);
+    void test_wheel_vel(float dist, float base_speed, double secs, double delay);
     void test_wheel_dist(float dist, double delay);
+    void test_wheel_dist_vel(const float dist, const float base_speed, const double secs, const double delay);
     void test_entry_color(int color);
 
 private:
@@ -84,6 +85,7 @@ private:
     void wheel_planner_msg_vel_xyz_duration(const float x, const float y, const float z, const double secs);
     void wheel_planner_msg_far_left();
     void wheel_planner_msg_far_right();
+    void wheel_planner_msg_stop();
 };
 
 #endif

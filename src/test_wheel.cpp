@@ -17,6 +17,7 @@ int main(int argc, char **argv)
 
     LevelPlanner planner(nh);
 
-    //planner.test_wheel(dist, base_speed, secs, delay);
+    planner.test_wheel_vel(dist, base_speed, secs, delay);
     planner.test_wheel_dist(dist, delay);
+    planner.test_wheel_dist_vel(dist, base_speed, secs, delay);
 }
