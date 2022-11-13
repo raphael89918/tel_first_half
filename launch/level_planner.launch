@@ -1,9 +1,14 @@
 <launch>
-    <node name="level_planner" pkg="tel_first_half" type="level_planner_node" output="screen"/>
 
     <include file="$(find tel_first_half)/launch/level_planner_param.launch" />
     <include file = "$(find realsense2_camera)/launch/rs_camera.launch"/>
     <include file = "$(find ground_color)/launch/messenger.launch"/>
+
+    <node name="level_planner_node" pkg="tel_first_half" type="level_planner_node" output="screen"/>
+    <node name="motorCtrl_node" pkg="wheel_tokyo_weili" type="motorCtrl_node" output="screen"/>
+    <node name="encoderCounter_node" pkg="wheel_tokyo_weili" type="encoderCounter_node" output="screen"/>
+    <node name="wheel_planner_node" pkg="wheel_tokyo_weili" type="wheel_planner_node" output="screen"/>
+
 
     <node
         ns="arduino_motor"

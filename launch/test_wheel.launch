@@ -8,8 +8,6 @@
     <node name="encoderCounter_node" pkg="wheel_tokyo_weili" type="encoderCounter_node" output="screen"/>
     <node name="wheel_planner_node" pkg="wheel_tokyo_weili" type="wheel_planner_node" output="screen"/>
 
-
-
     <node
         ns="arduino_motor"
         pkg="rosserial_python"

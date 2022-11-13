@@ -86,6 +86,7 @@ private:
     void wheel_planner_msg_far_left();
     void wheel_planner_msg_far_right();
     void wheel_planner_msg_stop();
+    void wheel_planner_msg_wait();
 };
 
 #endif

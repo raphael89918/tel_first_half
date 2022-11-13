@@ -4,7 +4,6 @@
     <include file = "$(find ground_color)/launch/messenger.launch"/>
     
     <node name="test_entry_node" pkg="tel_first_half" type="test_entry_node" output="screen"/>
-
     <node name="motorCtrl_node" pkg="wheel_tokyo_weili" type="motorCtrl_node" output="screen"/>
     <node name="encoderCounter_node" pkg="wheel_tokyo_weili" type="encoderCounter_node" output="screen"/>
     <node name="wheel_planner_node" pkg="wheel_tokyo_weili" type="wheel_planner_node" output="screen"/>
