@@ -74,8 +74,15 @@ private:
     void level_2_distance_strategy();
 
     void entry_color(int color);
+
+    void entry_color_x(int color);
+    void entry_color_y(int color);
+    void entry_color_z(int color);
+
     void forward_color(int color);
 
+    int get_y_offset(int color);
+    int get_z_offset(int color);
     double clamp(const double value, const double min, const double max);
 
     void wheel_planner_msg_init();

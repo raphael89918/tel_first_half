@@ -1,5 +1,5 @@
 <launch>
-    <param name="/level_planner/test/color_code" type="int" value="0" />
+    <param name="/level_planner/test/color_code" type="int" value="2" />
     <param name="/level_planner/test/speed" type="double" value="0.25" />
     <param name="/level_planner/test/dist" type="double" value="5.0" />
     <param name="/level_planner/test/duration" type="double" value="0.25" />
@@ -7,18 +7,31 @@
 
     <param name="/level_planner/level_code" type="int" value="2" />
 
-    <param name="/level_planner/step_delay" type="double" value="2.0" />
+    <param name="/level_planner/step_delay" type="double" value="1.0" />
+
+    <param name="/level_planner/gain_x" type="double" value="1.0" />
+    <param name="/level_planner/gain_y" type="double" value="1.0" />
+    <param name="/level_planner/gain_z" type="double" value="1.0" />
 
     <param name="/level_planner/level_2/strategy" type="int" value="0" />
     <param name="/level_planner/level_2/base_speed" type="double" value="0.25" />
     <param name="/level_planner/level_2/area_threshold" type="int" value="5000" />
     <param name="/level_planner/level_2/pixel_threshold" type="int" value="10" />
+    <param name="/level_planner/level_2/angle_threshold" type="int" value="5" />
 
     <param name="/level_planner/level_2/entry_color/min_area" type="int" value="500" />
-    <param name="/level_planner/level_2/entry_xy/p" type="double" value="0.0012" />
+    <param name="/level_planner/level_2/entry_xy/p" type="double" value="0.0006" />
     <param name="/level_planner/level_2/entry_xy/i" type="double" value="0.00003" />
     <param name="/level_planner/level_2/entry_xy/d" type="double" value="0.000000" />
 
-    <param name="/level_planner/xy_clamp_max" type="double" value="0.5" />
-    <param name="/level_planner/xy_clamp_min" type="double" value="-0.5" />
+    <param name="/level_planner/level_2/entry_z/p" type="double" value="0.02" />
+    <param name="/level_planner/level_2/entry_z/i" type="double" value="0.005" />
+    <param name="/level_planner/level_2/entry_z/d" type="double" value="0.000000" />
+
+    <param name="/level_planner/xy_clamp_max" type="double" value="0.25" />
+    <param name="/level_planner/xy_clamp_min" type="double" value="-0.25" />
+
+    <param name="/level_planner/z_clamp_max" type="double" value="0.73" />
+    <param name="/level_planner/z_clamp_min" type="double" value="-0.73" />
+
 </launch>
