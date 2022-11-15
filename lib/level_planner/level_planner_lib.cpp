@@ -335,12 +335,13 @@ void LevelPlanner::entry_color(int color)
 
     while ((abs(get_y_offset(color)) > mid_pixel_threshold) ||
            (abs(get_z_offset(color) > angle_threshold)) ||
-           ros::Time::now() < startTime + maxTime)
+           ros::Time::now() > startTime + maxTime)
     {
         entry_color_y(color);
         entry_color_z(color);
         ros::spinOnce();
         m_rate.sleep();
+        ROS_INFO("time elapsed: %f", (ros::Time::now() - startTime).toSec());
     }
 
     wheel_planner_msg_stop();
