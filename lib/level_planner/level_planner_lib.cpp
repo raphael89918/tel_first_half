@@ -323,7 +323,10 @@ void LevelPlanner::entry_color(int color)
     ros::spinOnce();
 
     m_nh.getParamCached("/level_planner/level_2/pixel_threshold", mid_pixel_threshold);
-    while (abs(get_y_offset(color)) > mid_pixel_threshold - 0.5 || abs(get_z_offset(color)) > angle_threshold - 0.5)
+    m_nh.getParamCached("/level_planner/level_2/angle_threshold", angle_threshold);
+
+    while ((abs(get_y_offset(color)) > mid_pixel_threshold) ||
+           (abs(get_z_offset(color) > angle_threshold)))
     {
         entry_color_y(color);
         entry_color_z(color);
@@ -355,10 +358,8 @@ void LevelPlanner::entry_color_y(int color)
     ROS_INFO("PID: %f %f %f", p, i, d);
 
     ros::spinOnce();
-    double offset = get_y_offset(color);
-    double speed = 0;
 
-    while (abs(offset) > mid_pixel_threshold)
+    while (abs(get_y_offset(color)) > mid_pixel_threshold)
     {
         if (m_color_msg.rect[color].rect_size < min_area)
         {
@@ -366,10 +367,8 @@ void LevelPlanner::entry_color_y(int color)
             exit(1);
         }
 
-        offset = get_y_offset(color);
-        speed = pid.calculate(offset);
+        double speed = pid.calculate(get_y_offset(color));
         wheel_planner_msg_vel_xyz(0, -clamp(speed, clamp_min, clamp_max), 0);
-        ROS_INFO("Offset: %lf, Not clamped Speed: %lf, Clamped Speed: %lf, Color area: %d", offset, speed, clamp(speed, clamp_min, clamp_max), m_color_msg.rect[color].rect_size);
 
         ros::spinOnce();
         m_rate.sleep();
@@ -400,10 +399,9 @@ void LevelPlanner::entry_color_z(int color)
 
     ros::spinOnce();
 
-    double offset = get_z_offset(color);
     double speed = 0;
 
-    while (abs(offset) > angle_threshold)
+    while (abs(get_z_offset(color)) > angle_threshold)
     {
         if (m_color_msg.rect[color].rect_size < min_area)
         {
@@ -411,10 +409,8 @@ void LevelPlanner::entry_color_z(int color)
             exit(1);
         }
 
-        offset = get_z_offset(color);
-        speed = pid.calculate(offset);
+        speed = pid.calculate(get_z_offset(color));
         wheel_planner_msg_vel_xyz(0, 0, clamp(speed, clamp_min, clamp_max));
-        ROS_INFO("Offset: %lf, Not clamped Speed: %lf, Clamped Speed: %lf, Color area: %d", offset, speed, clamp(speed, clamp_min, clamp_max), m_color_msg.rect[color].rect_size);
 
         ros::spinOnce();
         m_rate.sleep();
@@ -454,13 +450,17 @@ void LevelPlanner::forward_color(int color)
 int LevelPlanner::get_y_offset(int color)
 {
     ros::spinOnce();
-    return IMAGE_WIDTH / 2.0 - m_color_msg.rect[color].x_center;
+    int offset = IMAGE_WIDTH / 2 - m_color_msg.rect[color].x_center;
+    ROS_INFO("y_Offset: %d", offset);
+    return offset;
 }
 
 int LevelPlanner::get_z_offset(int color)
 {
     ros::spinOnce();
-    return -m_color_msg.rect[color].angle;
+    int offset = -m_color_msg.rect[color].angle;
+    ROS_INFO("z_offset: %d", offset);
+    return offset;
 }
 
 double LevelPlanner::clamp(const double value, const double min, const double max)
