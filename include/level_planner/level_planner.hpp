@@ -5,6 +5,7 @@
 #include <ground_color/GroundColor.h>
 #include <wheel_tokyo_weili/wheel_planner.h>
 #include <wheel_tokyo_weili/waitforidle.h>
+#include <bits/stdc++.h>
 #include "pid/pid.hpp"
 
 const int IMAGE_WIDTH = 1280;
@@ -65,6 +66,8 @@ private:
 
     void ground_color_callback(const ground_color::GroundColor &color_msg);
     void wheel_idle_callback(const wheel_tokyo_weili::waitforidle &wheel_idle_msg);
+
+    bool are_topics_ready(const std::vector<std::string> &query_topics);
 
     void level_1();
     void level_2();

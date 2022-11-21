@@ -29,10 +29,27 @@ LevelPlanner::LevelPlanner(LevelState level, ros::NodeHandle &nh)
     m_wheel_wait = m_nh.subscribe("/wheel/waitforidle", 1, &LevelPlanner::wheel_idle_callback, this);
     m_wheel_pub = m_nh.advertise<wheel_tokyo_weili::wheel_planner>("/wheel/planner", 1);
 
-    ros::Duration(10).sleep();
+    // ros::Duration(10).sleep();
+
+    std::vector<std::string> query_topics = {
+        "/ground_color",
+        "/wheel/waitforidle",
+        "/wheel/planner",
+        "/wheel/motor",
+        "/wheel/distance",
+        "/dynamixel/wheel_laser",
+        "/cmd_vel",
+        "/planner/encoder",
+        "/encoder",
+        "/camera/realsense2_camera_manager/bond",
+        "/camera/color/image_raw"};
+
+    while (!are_topics_ready(query_topics))
+    {
+        ros::Duration(1).sleep();
+    }
 
     wheel_planner_msg_init();
-
     ROS_INFO("Level Planner is up!!");
 }
 
@@ -48,16 +65,22 @@ void LevelPlanner::execute()
         switch (m_current_state)
         {
         case LevelState::LEVEL_1:
+        {
             level_1();
             break;
+        }
 
         case LevelState::LEVEL_2:
+        {
             level_2();
             break;
+        }
 
         case LevelState::LEVEL_3:
+        {
             level_3();
             break;
+        }
         }
     }
     ROS_INFO("Terminated");
@@ -205,6 +228,30 @@ void LevelPlanner::ground_color_callback(const ground_color::GroundColor &color_
 void LevelPlanner::wheel_idle_callback(const wheel_tokyo_weili::waitforidle &wheel_idle_msg)
 {
     m_wheel_idle_msg = wheel_idle_msg;
+}
+
+bool LevelPlanner::are_topics_ready(const std::vector<std::string> &query_topics)
+{
+    ros::master::V_TopicInfo master_topics;
+    ros::master::getTopics(master_topics);
+
+    std::unordered_set<std::string> topic_set;
+
+    for (auto topic : master_topics)
+    {
+        topic_set.insert(topic.name);
+    }
+
+    for (auto search_topic : query_topics)
+    {
+        if (topic_set.find(search_topic) == topic_set.end())
+        {
+            ROS_INFO("Waiting for topic %s", search_topic.c_str());
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void LevelPlanner::level_1()
