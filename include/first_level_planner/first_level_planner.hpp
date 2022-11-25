@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <bits/stdc++.h>
 #include "wheel_tokyo_weili/wheel_planner.h"
 #include "wheel_tokyo_weili/waitforidle.h"
 #include "ros_deep_learning/alphabet.h"
@@ -22,6 +23,13 @@ enum TARGET : uint8_t
     L = 2
 };
 
+enum Level_1_Strategy
+{
+    LEVEL_1_VISION = 0,
+    LEVEL_1_DISTANCE = 1,
+    LEVEL_1_TEST = 2
+};
+
 class first_level
 {
 private:
@@ -43,9 +51,15 @@ private:
     void trace_target(uint8_t first, uint8_t second, uint8_t third);
     void ready_grab_target();
     void grab_target();
+    bool are_topics_ready(const std::vector<std::string> &query_topics);
     
 public:
     first_level(const ros::NodeHandle &nh);
+
+    void vision_strategy();
+    void distance_strategy();
+    void test();
+
     void init_pubsub();
     void robot_move(uint8_t direction, int distance);
     void robot_wait();

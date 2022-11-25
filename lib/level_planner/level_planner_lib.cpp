@@ -29,13 +29,11 @@ LevelPlanner::LevelPlanner(LevelState level, ros::NodeHandle &nh)
     m_wheel_wait = m_nh.subscribe("/wheel/waitforidle", 1, &LevelPlanner::wheel_idle_callback, this);
     m_wheel_pub = m_nh.advertise<wheel_tokyo_weili::wheel_planner>("/wheel/planner", 1);
 
-
     std::vector<std::string> query_topics = {
         "/wheel/waitforidle",
         "/wheel/planner",
         "/wheel/motor",
         "/wheel/distance",
-        "/dynamixel/wheel_laser",
         "/cmd_vel",
         "/planner/encoder",
         "/encoder",
@@ -48,7 +46,7 @@ LevelPlanner::LevelPlanner(LevelState level, ros::NodeHandle &nh)
     }
 
     ros::Duration(3).sleep();
-    
+
     wheel_planner_msg_init();
     ROS_INFO("Level Planner is up!!");
 }
@@ -257,49 +255,41 @@ bool LevelPlanner::are_topics_ready(const std::vector<std::string> &query_topics
 void LevelPlanner::level_1()
 {
     ROS_INFO("level1");
-    
+
     first_level first_level(m_nh);
     first_level.init_pubsub();
     ROS_INFO("waiting");
     ros::Duration(10).sleep();
     ROS_INFO("GO");
-    
-    ROS_INFO("go front 30");
-    first_level.robot_move(front, 20);
-    
-    ROS_INFO("go to far right");
-    first_level.robot_far(right);
-    first_level.robot_move(left, 5);
-    
-    ROS_INFO("go front 100");
-    first_level.robot_move(front, 110);
 
-    ROS_INFO("turn -90 angle");
-    first_level.robot_move(rotate, -90);
+    int strategy = 69;
 
-    ROS_INFO("choose target");
-    first_level.choose_target();
-    
-    ROS_INFO("go back 10");
-    first_level.robot_move(back, 3);
+    m_nh.getParamCached("/level_planner/level_1/strategy", strategy);
 
-    ROS_INFO("turn -90 angle");
-    first_level.robot_move(rotate, -90);
-
-    ROS_INFO("go back 120");
-    first_level.robot_move(back, 120);
-
-    ROS_INFO("Heap target");
-    first_level.heap_target();
-
-    ROS_INFO("go front 10");
-    first_level.robot_move(front, 10);
-
-    ROS_INFO("turn 180 angle");
-    first_level.robot_move(rotate, 180);
-
-    ROS_INFO("go to far left");
-    first_level.robot_far(left);
+    switch (strategy)
+    {
+    case LEVEL_1_VISION:
+    {
+        first_level.vision_strategy();
+        break;
+    }
+    case LEVEL_1_DISTANCE:
+    {
+        first_level.distance_strategy();
+        break;
+    }
+    case LEVEL_1_TEST:
+    {
+        first_level.test();
+        break;
+    }
+    default:
+    {
+        ROS_ERROR("Invalid strategy");
+        exit(1);
+        break;
+    }
+    }
 
     m_current_state = LevelState::LEVEL_2;
 }
@@ -328,11 +318,10 @@ void LevelPlanner::level_2()
     default:
     {
         ROS_ERROR("Invalid strategy");
+        exit(1);
         break;
     }
     }
-
-    // level_2_vision_strategy();
 
     m_current_state = LevelState::LEVEL_3;
 }

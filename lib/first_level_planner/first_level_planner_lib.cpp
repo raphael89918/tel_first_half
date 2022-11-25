@@ -5,6 +5,113 @@ first_level::first_level(const ros::NodeHandle &nh) : nh(nh), direction(0)
     ROS_INFO("first_level constructed");
 }
 
+void first_level::vision_strategy()
+{
+    ROS_INFO("Level 1 vision stategy");
+
+    ROS_INFO("go front 30");
+    this->robot_move(front, 20);
+
+    ROS_INFO("go to far right");
+    this->robot_far(right);
+    this->robot_move(left, 5);
+
+    ROS_INFO("go front 110");
+    this->robot_move(front, 110);
+
+    ROS_INFO("turn -90 angle");
+    this->robot_move(rotate, -90);
+
+    ROS_INFO("choose target");
+    this->choose_target();
+
+    ROS_INFO("go back 10");
+    this->robot_move(back, 3);
+
+    ROS_INFO("turn -90 angle");
+    this->robot_move(rotate, -90);
+
+    ROS_INFO("go back 120");
+    this->robot_move(back, 120);
+
+    ROS_INFO("Heap target");
+    this->heap_target();
+
+    ROS_INFO("go front 10");
+    this->robot_move(front, 10);
+
+    ROS_INFO("turn 180 angle");
+    this->robot_move(rotate, 180);
+
+    ROS_INFO("go to far left");
+    this->robot_far(left);
+
+    ROS_INFO("end of level 1 vision strategy");
+}
+
+void first_level::distance_strategy()
+{
+    ROS_INFO("Level 1 distance stategy");
+
+    ROS_INFO("front 50");
+    robot_move(front, 50);
+
+    ROS_INFO("far right");
+    robot_far(right);
+
+    ROS_INFO("front 220");
+    robot_move(front, 220);
+
+    ROS_INFO("far left");
+    robot_far(left);
+
+    ROS_INFO("right 35");
+    robot_move(right, 30);
+
+    ROS_INFO("front 100");
+    robot_move(front, 100);
+
+    ROS_INFO("end of level 1 distance");
+}
+
+void first_level::test()
+{
+    ros::Time startTime = ros::Time::now();
+    ros::Duration maxTime(3.0);
+    ros::Rate rate(1);
+
+    std::vector<std::string> detection_query_topics = {
+        "/detectnet/detections",
+        "/alphabet"};
+
+    while (!are_topics_ready(detection_query_topics))
+    {
+        rate.sleep();
+    }
+
+    while (ros::Time::now() - startTime < maxTime)
+    {
+        ROS_INFO("T: x: %d, z: %lf", this->T_x, this->T_z);
+        ROS_INFO("E: x: %d, z: %lf", this->E_x, this->E_z);
+        ROS_INFO("L: x: %d, z: %lf", this->L_x, this->L_z);
+        
+        rate.sleep();
+        ros::spinOnce();
+    }
+
+    ROS_INFO("front 10");
+    robot_move(front, 10);
+
+    ROS_INFO("right 10");
+    robot_move(right, 10);
+
+    ROS_INFO("rotate left 20");
+    robot_move(rotate, -20);
+
+    ROS_INFO("end of test");
+    exit(0);
+}
+
 void first_level::init_pubsub()
 {
     wheel_pub = nh.advertise<wheel_tokyo_weili::wheel_planner>("/wheel/planner", 10);
@@ -392,4 +499,28 @@ void first_level::robot_move(uint8_t direction, int distance)
     ros::Duration(0.05).sleep();
     robot_wait();
     msg_init();
+}
+
+bool first_level::are_topics_ready(const std::vector<std::string> &query_topics)
+{
+    ros::master::V_TopicInfo master_topics;
+    ros::master::getTopics(master_topics);
+
+    std::unordered_set<std::string> topic_set;
+
+    for (auto topic : master_topics)
+    {
+        topic_set.insert(topic.name);
+    }
+
+    for (auto search_topic : query_topics)
+    {
+        if (topic_set.find(search_topic) == topic_set.end())
+        {
+            ROS_INFO("Waiting for topic %s", search_topic.c_str());
+            return false;
+        }
+    }
+
+    return true;
 }
