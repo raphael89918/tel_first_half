@@ -2,6 +2,15 @@
 
 ## First Half
 
+## Todo
+
+```rosrun dynamic_reconfigure dynparam set /camera/l5
+00_depth_sensor visual_preset 5```
+
+  <rosparam>
+      /camera/l500_depth_sensor/visual_preset: 5
+  </rosparam>
+
 ### Topic
 
 ```

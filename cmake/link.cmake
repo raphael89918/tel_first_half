@@ -1,4 +1,9 @@
+target_link_libraries(first_level_planner_lib
+    pid_lib
+)
+
 target_link_libraries(level_planner_lib
+    first_level_planner_lib
     pid_lib
 )
 

@@ -6,6 +6,7 @@
 #include <wheel_tokyo_weili/wheel_planner.h>
 #include <wheel_tokyo_weili/waitforidle.h>
 #include <bits/stdc++.h>
+#include "first_level_planner/first_level_planner.hpp"
 #include "pid/pid.hpp"
 
 const int IMAGE_WIDTH = 1280;

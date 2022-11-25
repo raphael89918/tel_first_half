@@ -16,6 +16,8 @@ public:
     double get_kb();
     double get_kc();
 
+    void init();
+
     void set_kp(double kp);
     void set_ki(double ki);
     void set_kd(double kd);
