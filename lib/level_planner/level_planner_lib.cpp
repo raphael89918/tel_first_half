@@ -626,13 +626,17 @@ void LevelPlanner::wheel_planner_msg_dist_xyz(const float x, const float y, cons
     float result_y = static_cast<float>(y * gain_y);
     float result_z = static_cast<float>(z * gain_z);
 
-    result_x = result_x > 0 ? result_x + bias_x : result_x - bias_x;
-    result_y = result_y > 0 ? result_y + bias_y : result_y - bias_y;
-    result_z = result_z > 0 ? result_z + bias_z : result_z - bias_z;
+    int sign_x = ((0 < result_x) - (result_x < 0));
+    int sign_y = ((0 < result_y) - (result_y < 0));
+    int sign_z = ((0 < result_z) - (result_z < 0));
 
-    result_x = fabs(result_x) < min_dis ? min_dis * ((0 < result_x) - (result_x < 0)) : result_x;
-    result_y = fabs(result_y) < min_dis ? min_dis * ((0 < result_y) - (result_y < 0)) : result_y;
-    result_z = fabs(result_z) < min_dis ? min_dis * ((0 < result_z) - (result_z < 0)) : result_z;
+    result_x = result_x + sign_x * bias_x;  
+    result_y = result_y + sign_y * bias_y;
+    result_z = result_z + sign_z * bias_z;
+
+    result_x = (fabs(result_x) < min_dis) ? (min_dis * sign_x) : (result_x);
+    result_y = (fabs(result_y) < min_dis) ? (min_dis * sign_y) : (result_y);
+    result_z = (fabs(result_z) < min_dis) ? (min_dis * sign_z) : (result_z);
 
     m_wheel_planner_msg.distance_x = static_cast<float>(result_x);
     m_wheel_planner_msg.distance_y = static_cast<float>(result_y);

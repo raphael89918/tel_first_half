@@ -566,6 +566,7 @@ void first_level::robot_move(uint8_t direction, int distance)
     }
 
     wheel_pub.publish(wheel_msg);
+    ROS_INFO("published wheel_msg x: %f, y: %f,  z: %f", wheel_msg.distance_x, wheel_msg.distance_y, wheel_msg.distance_z);
     ros::Duration(0.05).sleep();
     robot_wait();
     msg_init();
