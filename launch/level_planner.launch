@@ -5,7 +5,7 @@
     <include file = "$(find realsense2_camera)/launch/rs_camera.launch"/>
     <include file = "$(find ground_color)/launch/messenger.launch"/>
     <include file = "$(find wheel_tokyo_weili)/launch/wheel_planner.launch"/>
-    <!-- <include file = "$(find dynamixel_control)/launch/dynamixel_control.launch"/> -->
+    <include file = "$(find dynamixel_control)/launch/dynamixel_control.launch"/>
     <include file = "$(find gpio)/launch/laser.launch"/>
     <include file = "$(find ros_deep_learning)/launch/alphabet.launch"/>
 

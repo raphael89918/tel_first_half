@@ -14,6 +14,8 @@ void first_level::vision_strategy()
 
     ROS_INFO("go to far right");
     this->robot_far(right);
+
+    ROS_INFO("left 5");
     this->robot_move(left, 5);
 
     ROS_INFO("go front 110");
@@ -59,14 +61,14 @@ void first_level::distance_strategy()
     ROS_INFO("far right");
     robot_far(right);
 
-    ROS_INFO("front 220");
-    robot_move(front, 220);
+    ROS_INFO("front 210");
+    robot_move(front, 210);
 
     ROS_INFO("far left");
     robot_far(left);
 
     ROS_INFO("right 35");
-    robot_move(right, 30);
+    robot_move(right, 35);
 
     ROS_INFO("front 100");
     robot_move(front, 100);

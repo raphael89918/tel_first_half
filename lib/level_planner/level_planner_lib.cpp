@@ -38,7 +38,8 @@ LevelPlanner::LevelPlanner(LevelState level, ros::NodeHandle &nh)
         "/planner/encoder",
         "/encoder",
         "/camera/realsense2_camera_manager/bond",
-        "/camera/color/image_raw"};
+        "/camera/color/image_raw",
+        };
 
     while (!are_topics_ready(query_topics))
     {
@@ -58,6 +59,10 @@ LevelPlanner::~LevelPlanner()
 
 void LevelPlanner::execute()
 {
+    // wait for enter key
+    ROS_INFO("Press enter to start");
+    fscanf(stdin, "%*c");
+
     while (m_current_state != LevelState::TERMINATE)
     {
         switch (m_current_state)
@@ -265,6 +270,8 @@ void LevelPlanner::level_1()
     int strategy = 69;
 
     m_nh.getParamCached("/level_planner/level_1/strategy", strategy);
+
+    std::vector<std::string> topics = {"/ground_color/color"};
 
     switch (strategy)
     {

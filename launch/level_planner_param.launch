@@ -24,12 +24,14 @@
 
     <param name="/level_planner/level_2/entry_color/min_area" type="int" value="500" />
     <param name="/level_planner/level_2/entry_xy/p" type="double" value="0.0006" />
-    <param name="/level_planner/level_2/entry_xy/i" type="double" value="0.00003" />
+    <param name="/level_planner/level_2/entry_xy/i" type="double" value="0.00004" />
     <param name="/level_planner/level_2/entry_xy/d" type="double" value="0.000000" />
 
     <param name="/level_planner/level_2/entry_z/p" type="double" value="0.02" />
     <param name="/level_planner/level_2/entry_z/i" type="double" value="0.005" />
     <param name="/level_planner/level_2/entry_z/d" type="double" value="0.000000" />
+
+    <param name="/level_planner/level_3/strategy" type="int" value="0" />
 
     <param name="/level_planner/xy_clamp_max" type="double" value="0.25" />
     <param name="/level_planner/xy_clamp_min" type="double" value="-0.25" />
