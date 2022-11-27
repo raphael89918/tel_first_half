@@ -39,14 +39,12 @@ LevelPlanner::LevelPlanner(LevelState level, ros::NodeHandle &nh)
         "/encoder",
         "/camera/realsense2_camera_manager/bond",
         "/camera/color/image_raw",
-        };
+    };
 
     while (!are_topics_ready(query_topics))
     {
         ros::Duration(1).sleep();
     }
-
-    ros::Duration(3).sleep();
 
     wheel_planner_msg_init();
     ROS_INFO("Level Planner is up!!");
@@ -263,39 +261,68 @@ void LevelPlanner::level_1()
 
     first_level first_level(m_nh);
     first_level.init_pubsub();
-    ROS_INFO("waiting");
-    ros::Duration(10).sleep();
+
     ROS_INFO("GO");
 
     int strategy = 69;
 
     m_nh.getParamCached("/level_planner/level_1/strategy", strategy);
 
-    std::vector<std::string> topics = {"/ground_color/color"};
+    std::vector<std::string> gpio_topics = {"/laser"};
+    std::vector<std::string> dynamixel_topics = {"/dynamixel/arm_storage",
+                                                 "/dynamixe/wheel_laser"};
+    std::vector<std::string> vision_topics = {"/alphabet", "/detectnet/detections", "/camera/depth/image_rect_raw"};
 
-    switch (strategy)
+    bool exit_strat = false;
+
+    while (!exit_strat)
     {
-    case LEVEL_1_VISION:
-    {
-        first_level.vision_strategy();
-        break;
-    }
-    case LEVEL_1_DISTANCE:
-    {
-        first_level.distance_strategy();
-        break;
-    }
-    case LEVEL_1_TEST:
-    {
-        first_level.test();
-        break;
-    }
-    default:
-    {
-        ROS_ERROR("Invalid strategy");
-        exit(1);
-        break;
-    }
+        switch (strategy)
+        {
+        case LEVEL_1_VISION:
+        {
+            if (!are_topics_ready(vision_topics) ||
+                !are_topics_ready(gpio_topics) ||
+                !are_topics_ready(dynamixel_topics))
+            {
+                strategy = LEVEL_1_DISTANCE;
+                break;
+            }
+            first_level.vision_strategy();
+            exit_strat = true;
+            break;
+        }
+        case LEVEL_1_DISTANCE:
+        {
+            if (!are_topics_ready(gpio_topics))
+            {
+                strategy = LEVEL_1_NO_GPIO;
+                break;
+            }
+
+            first_level.distance_strategy();
+            exit_strat = true;
+            break;
+        }
+        case LEVEL_1_NO_GPIO:
+        {
+            first_level.no_gpio_strategy();
+            exit_strat = true;
+            break;
+        }
+        case LEVEL_1_TEST:
+        {
+            first_level.test();
+            exit_strat = true;
+            break;
+        }
+        default:
+        {
+            ROS_ERROR("Invalid strategy");
+            exit(1);
+            break;
+        }
+        }
     }
 
     m_current_state = LevelState::LEVEL_2;
@@ -582,16 +609,30 @@ void LevelPlanner::wheel_planner_msg_init()
 void LevelPlanner::wheel_planner_msg_dist_xyz(const float x, const float y, const float z)
 {
     double gain_x = 1.0, gain_y = 1.0, gain_z = 1.0;
+    double bias_x = 0.0, bias_y = 0.0, bias_z = 0.0;
+    double min_dis = 1.0;
 
     m_nh.getParamCached("/level_planner/gain_x", gain_x);
     m_nh.getParamCached("/level_planner/gain_y", gain_y);
     m_nh.getParamCached("/level_planner/gain_z", gain_z);
+
+    m_nh.getParamCached("/level_planner/bias_x", bias_x);
+    m_nh.getParamCached("/level_planner/bias_y", bias_y);
+    m_nh.getParamCached("/level_planner/bias_z", bias_z);
 
     wheel_planner_msg_init();
 
     float result_x = static_cast<float>(x * gain_x);
     float result_y = static_cast<float>(y * gain_y);
     float result_z = static_cast<float>(z * gain_z);
+
+    result_x = result_x > 0 ? result_x + bias_x : result_x - bias_x;
+    result_y = result_y > 0 ? result_y + bias_y : result_y - bias_y;
+    result_z = result_z > 0 ? result_z + bias_z : result_z - bias_z;
+
+    result_x = fabs(result_x) < min_dis ? min_dis * ((0 < result_x) - (result_x < 0)) : result_x;
+    result_y = fabs(result_y) < min_dis ? min_dis * ((0 < result_y) - (result_y < 0)) : result_y;
+    result_z = fabs(result_z) < min_dis ? min_dis * ((0 < result_z) - (result_z < 0)) : result_z;
 
     m_wheel_planner_msg.distance_x = static_cast<float>(result_x);
     m_wheel_planner_msg.distance_y = static_cast<float>(result_y);

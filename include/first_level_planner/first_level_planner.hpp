@@ -12,8 +12,9 @@ enum DIRECTION : uint8_t
     left = 0,
     right = 1,
     front = 2,
-    rotate = 3,
-    back = 4
+    rotate_left = 3,
+    rotate_right = 4,
+    back = 5
 };
 
 enum TARGET : uint8_t
@@ -27,7 +28,8 @@ enum Level_1_Strategy
 {
     LEVEL_1_VISION = 0,
     LEVEL_1_DISTANCE = 1,
-    LEVEL_1_TEST = 2
+    LEVEL_1_NO_GPIO = 2,
+    LEVEL_1_TEST = 3
 };
 
 class first_level
@@ -58,6 +60,7 @@ public:
 
     void vision_strategy();
     void distance_strategy();
+    void no_gpio_strategy();
     void test();
 
     void init_pubsub();

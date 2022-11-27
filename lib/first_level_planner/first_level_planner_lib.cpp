@@ -18,11 +18,11 @@ void first_level::vision_strategy()
     ROS_INFO("left 5");
     this->robot_move(left, 5);
 
-    ROS_INFO("go front 110");
-    this->robot_move(front, 110);
+    ROS_INFO("go front 100");
+    this->robot_move(front, 100);
 
     ROS_INFO("turn -90 angle");
-    this->robot_move(rotate, -90);
+    this->robot_move(rotate_left, 90);
 
     ROS_INFO("choose target");
     this->choose_target();
@@ -31,7 +31,7 @@ void first_level::vision_strategy()
     this->robot_move(back, 3);
 
     ROS_INFO("turn -90 angle");
-    this->robot_move(rotate, -90);
+    this->robot_move(rotate_left, 90);
 
     ROS_INFO("go back 120");
     this->robot_move(back, 120);
@@ -43,7 +43,7 @@ void first_level::vision_strategy()
     this->robot_move(front, 10);
 
     ROS_INFO("turn 180 angle");
-    this->robot_move(rotate, 180);
+    this->robot_move(rotate_right, 180);
 
     ROS_INFO("go to far left");
     this->robot_far(left);
@@ -61,8 +61,8 @@ void first_level::distance_strategy()
     ROS_INFO("far right");
     robot_far(right);
 
-    ROS_INFO("front 210");
-    robot_move(front, 210);
+    ROS_INFO("front 200");
+    robot_move(front, 200);
 
     ROS_INFO("far left");
     robot_far(left);
@@ -74,6 +74,34 @@ void first_level::distance_strategy()
     robot_move(front, 100);
 
     ROS_INFO("end of level 1 distance");
+}
+
+void first_level::no_gpio_strategy()
+{
+    ROS_INFO("Level 1 no gpio stategy");
+
+    ROS_INFO("front 50");
+    robot_move(front, 50);
+
+    ROS_INFO("right 25");
+    robot_move(right, 25);
+
+    ROS_INFO("front 150");
+    robot_move(front, 150);
+
+    ROS_INFO("left 50");
+    robot_move(left, 50);
+
+    ROS_INFO("front 100");
+    robot_move(front, 100);
+
+    ROS_INFO("right 25");
+    robot_move(right, 25);
+
+    ROS_INFO("front 50");
+    robot_move(front, 50);
+
+    ROS_INFO("end of level 1 no gpio");
 }
 
 void first_level::test()
@@ -96,7 +124,7 @@ void first_level::test()
         ROS_INFO("T: x: %d, z: %lf", this->T_x, this->T_z);
         ROS_INFO("E: x: %d, z: %lf", this->E_x, this->E_z);
         ROS_INFO("L: x: %d, z: %lf", this->L_x, this->L_z);
-        
+
         rate.sleep();
         ros::spinOnce();
     }
@@ -108,7 +136,7 @@ void first_level::test()
     robot_move(right, 10);
 
     ROS_INFO("rotate left 20");
-    robot_move(rotate, -20);
+    robot_move(rotate_left, 20);
 
     ROS_INFO("end of test");
     exit(0);
@@ -474,27 +502,67 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
 
 void first_level::robot_move(uint8_t direction, int distance)
 {
+    double gain_x = 1.0, gain_y = 1.0, gain_z = 1.0;
+    double bias_x = 0.0, bias_y = 0.0, bias_z = 0.0;
+    int min_dist = 1;
+
+    this->nh.getParamCached("/level_planner/gain_x", gain_x);
+    this->nh.getParamCached("/level_planner/gain_y", gain_y);
+    this->nh.getParamCached("/level_planner/gain_z", gain_z);
+
+    this->nh.getParamCached("/level_planner/bias_x", bias_x);
+    this->nh.getParamCached("/level_planner/bias_y", bias_y);
+    this->nh.getParamCached("/level_planner/bias_z", bias_z);
+
+    if (distance < 0)
+    {
+        ROS_WARN("distance is negative");
+    }
+
     switch (direction)
     {
     case left:
-        wheel_msg.distance_y = -distance;
+    {
+        wheel_msg.distance_y = distance * gain_y - bias_y > min_dist
+                                   ? -distance * gain_y + bias_y
+                                   : -min_dist;
         break;
-
+    }
     case right:
-        wheel_msg.distance_y = distance;
+    {
+        wheel_msg.distance_y = distance * gain_y - bias_y > min_dist
+                                   ? distance * gain_y - bias_y
+                                   : min_dist;
         break;
-
+    }
     case front:
-        wheel_msg.distance_x = distance;
+    {
+        wheel_msg.distance_x = distance * gain_x - bias_x > min_dist
+                                   ? distance * gain_x - bias_x
+                                   : min_dist;
         break;
-
-    case rotate:
-        wheel_msg.distance_z = distance;
+    }
+    case rotate_left:
+    {
+        wheel_msg.distance_z = distance * gain_z - bias_z > min_dist
+                                   ? -distance * gain_z + bias_z
+                                   : min_dist;
         break;
-
+    }
+    case rotate_right:
+    {
+        wheel_msg.distance_z = distance * gain_z - bias_z > min_dist
+                                   ? distance * gain_z - bias_z
+                                   : min_dist;
+        break;
+    }
     case back:
-        wheel_msg.distance_x = -distance;
+    {
+        wheel_msg.distance_x = distance * gain_x - bias_x > min_dist
+                                   ? -distance * gain_x + bias_x
+                                   : -min_dist;
         break;
+    }
     }
 
     wheel_pub.publish(wheel_msg);
