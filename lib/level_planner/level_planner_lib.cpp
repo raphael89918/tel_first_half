@@ -36,9 +36,9 @@ LevelPlanner::LevelPlanner(LevelState level, ros::NodeHandle &nh)
         "/wheel/distance",
         "/cmd_vel",
         "/planner/encoder",
+        //"/camera/realsense2_camera_manager/bond",
+        //"/camera/color/image_raw",
         "/encoder",
-        "/camera/realsense2_camera_manager/bond",
-        "/camera/color/image_raw",
     };
 
     while (!are_topics_ready(query_topics))
@@ -47,6 +47,8 @@ LevelPlanner::LevelPlanner(LevelState level, ros::NodeHandle &nh)
     }
 
     wheel_planner_msg_init();
+
+    ros::Duration(10).sleep();
     ROS_INFO("Level Planner is up!!");
 }
 
@@ -444,9 +446,9 @@ void LevelPlanner::entry_color(int color)
     ros::Time startTime = ros::Time::now();
     ros::Duration maxTime(max_time);
 
-    while ((abs(get_y_offset(color)) > mid_pixel_threshold) ||
-           (abs(get_z_offset(color) > angle_threshold)) ||
-           ros::Time::now() < startTime + maxTime)
+    while (((abs(get_y_offset(color)) > mid_pixel_threshold) ||
+            (abs(get_z_offset(color)) > angle_threshold)) &&
+           (ros::Time::now() < startTime + maxTime))
     {
         entry_color_y(color);
         entry_color_z(color);
@@ -630,9 +632,9 @@ void LevelPlanner::wheel_planner_msg_dist_xyz(const float x, const float y, cons
     int sign_y = ((0 < result_y) - (result_y < 0));
     int sign_z = ((0 < result_z) - (result_z < 0));
 
-    result_x = result_x + sign_x * bias_x;  
-    result_y = result_y + sign_y * bias_y;
-    result_z = result_z + sign_z * bias_z;
+    result_x = result_x - sign_x * bias_x;
+    result_y = result_y - sign_y * bias_y;
+    result_z = result_z - sign_z * bias_z;
 
     result_x = (fabs(result_x) < min_dis) ? (min_dis * sign_x) : (result_x);
     result_y = (fabs(result_y) < min_dis) ? (min_dis * sign_y) : (result_y);
@@ -709,6 +711,7 @@ void LevelPlanner::wheel_planner_msg_stop()
 void LevelPlanner::wheel_planner_msg_wait()
 {
     double step_delay = 1.0;
+    m_nh.getParamCached("/level_planner/step_delay", step_delay);
 
     ros::spinOnce();
 
@@ -719,7 +722,7 @@ void LevelPlanner::wheel_planner_msg_wait()
         m_rate.sleep();
     }
 
-    m_nh.getParamCached("/level_planner/step_delay", step_delay);
+    ROS_INFO("step_delay: %lf", step_delay);
 
     ros::Duration(step_delay).sleep();
 }
