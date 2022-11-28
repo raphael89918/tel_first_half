@@ -9,12 +9,12 @@
     <param name="/level_planner/level_code" type="int" value="1" />
     <param name="/level_planner/step_delay" type="double" value="2.0" />
 
-    <param name="/level_planner/gain_x" type="double" value="0.5" />
+    <param name="/level_planner/gain_x" type="double" value="0.8" />
     <param name="/level_planner/gain_y" type="double" value="0.8" />
     <param name="/level_planner/gain_z" type="double" value="1.0" />
 
-    <param name="/level_planner/bias_x" type="double" value="8" />
-    <param name="/level_planner/bias_y" type="double" value="8" />
+    <param name="/level_planner/bias_x" type="double" value="0" />
+    <param name="/level_planner/bias_y" type="double" value="0" />
     <param name="/level_planner/bias_z" type="double" value="0" />
 
     <param name="/level_planner/level_1/strategy" type="int" value="2" />

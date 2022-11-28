@@ -446,7 +446,7 @@ void LevelPlanner::entry_color(int color)
 
     while ((abs(get_y_offset(color)) > mid_pixel_threshold) ||
            (abs(get_z_offset(color) > angle_threshold)) ||
-           ros::Time::now() > startTime + maxTime)
+           ros::Time::now() < startTime + maxTime)
     {
         entry_color_y(color);
         entry_color_z(color);
