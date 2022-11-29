@@ -9,8 +9,8 @@
 #include "first_level_planner/first_level_planner.hpp"
 #include "pid/pid.hpp"
 
-const int IMAGE_WIDTH = 1280;
-const int IMAGE_HEIGHT = 720;
+const int IMAGE_WIDTH = 640;
+const int IMAGE_HEIGHT = 360;
 
 enum Color
 {
