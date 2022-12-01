@@ -27,20 +27,17 @@ void first_level::vision_strategy()
     ROS_INFO("choose target");
     this->choose_target();
 
-    ROS_INFO("go back 10");
-    this->robot_move(back, 10);
-
     ROS_INFO("go left 10");
     this->robot_move(left, 10);
 
     ROS_INFO("choose target");
     this->choose_target();
 
-    ROS_INFO("go back 10");
-    this->robot_move(back, 10);
+    ROS_INFO("go back 5");
+    this->robot_move(back, 5);
 
-    ROS_INFO("turn 90 angle");
-    this->robot_move(rotate_right, 90);
+    ROS_INFO("turn 85 angle");
+    this->robot_move(rotate_right, 85);
 
     ROS_INFO("go front 80");
     this->robot_move(front, 80);
@@ -345,7 +342,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
     PID pid_x(0.0005, 0.0001, 0);
     PID pid_z(0.0005, 0.0001, 0);
     double max_time = 10.0;
-    ros::Time startTime = ros::Time::now();
+    ros::Time startTime;
     ros::Duration maxTime(max_time);
     ready_grab_target();
     ros::Rate loop_rate(30);
@@ -364,7 +361,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
             }
             ROS_INFO("trace T");
             startTime = ros::Time::now();
-            while (T_z >= 255 || T_z <= 245 && ros::Time::now() < startTime + maxTime)
+            while ((T_z >= 255 || T_z <= 245) && (ros::Time::now() < startTime + maxTime))
             {
                 if (T_z == 0)
                 {
@@ -391,7 +388,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
             wheel_pub.publish(wheel_msg);
             ros::Duration(1).sleep();
             startTime = ros::Time::now();
-            while (T_x >= 330 || T_x <= 310 && ros::Time::now() < startTime + maxTime)
+            while ((T_x >= 330 || T_x <= 310) && (ros::Time::now() < startTime + maxTime))
             {
                 if (T_x == -1)
                 {
@@ -428,7 +425,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
             }
             ROS_INFO("trace E");
             startTime = ros::Time::now();
-            while (E_z >= 255 || E_z <= 245 && ros::Time::now() < startTime + maxTime)
+            while ((E_z >= 255 || E_z <= 245) && (ros::Time::now() < startTime + maxTime))
             {
                 if (E_z == 0)
                 {
@@ -455,7 +452,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
             wheel_pub.publish(wheel_msg);
             ros::Duration(1).sleep();
             startTime = ros::Time::now();
-            while (E_x >= 330 || E_x <= 310 && ros::Time::now() < startTime + maxTime)
+            while ((E_x >= 330 || E_x <= 310) && (ros::Time::now() < startTime + maxTime))
             {
                 if (E_x == -1)
                 {
@@ -492,7 +489,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
             }
             ROS_INFO("trace L");
             startTime = ros::Time::now();
-            while (L_z >= 255 || L_z <= 245 && ros::Time::now() < startTime + maxTime)
+            while ((L_z >= 255 || L_z <= 245) && (ros::Time::now() < startTime + maxTime))
             {
                 if (L_z == 0)
                 {
@@ -519,7 +516,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
             wheel_pub.publish(wheel_msg);
             ros::Duration(1).sleep();
             startTime = ros::Time::now();
-            while (L_x >= 330 || L_x <= 310 && ros::Time::now() < startTime + maxTime)
+            while ((L_x >= 330 || L_x <= 310) && (ros::Time::now() < startTime + maxTime))
             {
                 if (L_x == -1)
                 {
