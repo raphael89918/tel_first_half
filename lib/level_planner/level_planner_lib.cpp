@@ -272,7 +272,7 @@ void LevelPlanner::level_1()
 
     std::vector<std::string> gpio_topics = {"/laser"};
     std::vector<std::string> dynamixel_topics = {"/dynamixel/arm_storage",
-                                                 "/dynamixe/wheel_laser"};
+                                                 "/dynamixel/wheel_laser"};
     std::vector<std::string> vision_topics = {"/alphabet", "/detectnet/detections", "/camera/depth/image_rect_raw"};
 
     bool exit_strat = false;
@@ -428,8 +428,6 @@ void LevelPlanner::level_2_distance_strategy()
 
     wheel_planner_msg_dist_xyz(40, 0, 0);
     wheel_planner_msg_dist_xyz(0, -15, 0);
-
-    wheel_planner_msg_dist_xyz(55, 0, 0);
 }
 
 void LevelPlanner::entry_color(int color)

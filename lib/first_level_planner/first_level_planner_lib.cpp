@@ -9,17 +9,17 @@ void first_level::vision_strategy()
 {
     ROS_INFO("Level 1 vision stategy");
 
-    ROS_INFO("go front 30");
+    ROS_INFO("go front 20");
     this->robot_move(front, 20);
 
     ROS_INFO("go to far right");
     this->robot_far(right);
 
-    ROS_INFO("left 5");
-    this->robot_move(left, 5);
+    ROS_INFO("left 10");
+    this->robot_move(left, 10);
 
-    ROS_INFO("go front 100");
-    this->robot_move(front, 100);
+    ROS_INFO("go front 120");
+    this->robot_move(front, 120);
 
     ROS_INFO("turn -90 angle");
     this->robot_move(rotate_left, 90);
@@ -28,25 +28,57 @@ void first_level::vision_strategy()
     this->choose_target();
 
     ROS_INFO("go back 10");
-    this->robot_move(back, 3);
+    this->robot_move(back, 10);
 
-    ROS_INFO("turn -90 angle");
-    this->robot_move(rotate_left, 90);
+    ROS_INFO("go left 10");
+    this->robot_move(left, 10);
 
-    ROS_INFO("go back 120");
-    this->robot_move(back, 120);
+    ROS_INFO("choose target");
+    this->choose_target();
+
+    ROS_INFO("go back 10");
+    this->robot_move(back, 10);
+
+    ROS_INFO("turn 90 angle");
+    this->robot_move(rotate_right, 90);
+
+    ROS_INFO("go front 80");
+    this->robot_move(front, 80);
+
+    ROS_INFO("go to far left");
+    this->robot_far(left);
+
+    ROS_INFO("go right 10");
+    this->robot_move(right, 10);
+
+    ROS_INFO("go back far");
+    this->continue_back();
+
+    ROS_INFO("fo front 10");
+    this->robot_move(front, 10);
+
+    ROS_INFO("go right 5");
+    this->robot_move(right, 5);
+
+    ROS_INFO("go front 200");
+    this->robot_move(front, 200);
+
+    ROS_INFO("go to far right");
+    this->robot_far(right);
+
+    ROS_INFO("go left 3");
+    this->robot_move(left, 3);
+    
+    ROS_INFO("go back far");
+    this->continue_back();
 
     ROS_INFO("Heap target");
     this->heap_target();
 
-    ROS_INFO("go front 10");
-    this->robot_move(front, 10);
+    ROS_INFO("go left 30");
+    this->robot_move(left, 30);
 
-    ROS_INFO("turn 180 angle");
-    this->robot_move(rotate_right, 180);
-
-    ROS_INFO("go to far left");
-    this->robot_far(left);
+    ros::Duration(4).sleep();
 
     ROS_INFO("end of level 1 vision strategy");
 }
@@ -89,11 +121,17 @@ void first_level::no_gpio_strategy()
     ROS_INFO("front 150");
     robot_move(front, 150);
 
-    ROS_INFO("left 50");
-    robot_move(left, 50);
+    ROS_INFO("left 45");
+    robot_move(left, 45);
 
-    ROS_INFO("front 100");
-    robot_move(front, 100);
+    ROS_INFO("front 75");
+    robot_move(front, 75);
+
+    ROS_INFO("right 1");
+    robot_move(right, 1);
+
+    ROS_INFO("front 75");
+    robot_move(front, 75);
 
     ROS_INFO("right 25");
     robot_move(right, 25);
@@ -225,37 +263,38 @@ void first_level::choose_target()
     if (T_z == 0 && E_z == 0 && L_z == 0)
     {
         ROS_INFO("no TEL target");
+        robot_move(front, 10);
         return;
     }
     if (T_z >= E_z && T_z >= L_z)
     {
-        if (E_z < L_z && E_z != 0)
+        if (E_z < L_z)
         {
             trace_target(E, L, T);
         }
-        if (L_z < E_z && L_z != 0)
+        if (L_z <= E_z)
         {
             trace_target(L, E, T);
         }
     }
     if (E_z >= T_z && E_z >= L_z)
     {
-        if (T_z < L_z && T_z != 0)
+        if (T_z < L_z)
         {
             trace_target(T, L, E);
         }
-        if (L_z < T_z && L_z != 0)
+        if (L_z <= T_z)
         {
             trace_target(L, T, E);
         }
     }
     if (L_z >= E_z && L_z >= T_z)
     {
-        if (T_z < E_z && T_z != 0)
+        if (T_z < E_z)
         {
             trace_target(T, E, L);
         }
-        if (E_z < T_z && E_z != 0)
+        if (E_z <= T_z)
         {
             trace_target(E, T, L);
         }
@@ -288,7 +327,10 @@ void first_level::heap_target()
 {
     arm_msg.control = 5;
     arm_pub.publish(arm_msg);
-    ros::Duration(0.1).sleep();
+    ros::Duration(20).sleep();
+
+    robot_move(front, 30);
+
     arm_msg.control = 6;
     arm_pub.publish(arm_msg);
     ros::Duration(0.1).sleep();
@@ -296,13 +338,14 @@ void first_level::heap_target()
 
 void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
 {
-    float max_speed = 0.2;
+    float max_speed = 0.21;
     int temp[3] = {first, second, third};
     float center_z = 250;
-    int center_x = 640;
+    int center_x = 320;
     PID pid_x(0.0005, 0.0001, 0);
     PID pid_z(0.0005, 0.0001, 0);
     ready_grab_target();
+    ros::Rate loop_rate(30);
     for (int i = 0; i < 3; i++)
     {
         pid_x.init();
@@ -336,14 +379,14 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
                     wheel_msg.velocity_x = -max_speed;
                 }
                 wheel_pub.publish(wheel_msg);
-                ros::Duration(0.01).sleep();
+                loop_rate.sleep();
                 ros::spinOnce();
             }
             pid_z.init();
             msg_init();
             wheel_pub.publish(wheel_msg);
             ros::Duration(1).sleep();
-            while (T_x >= 645 || T_x <= 635)
+            while (T_x >= 330 || T_x <= 310)
             {
                 if (T_x == -1)
                 {
@@ -363,7 +406,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
                 }
                 wheel_pub.publish(wheel_msg);
                 ros::spinOnce();
-                ros::Duration(0.01).sleep();
+                loop_rate.sleep();
             }
             pid_x.init();
             msg_init();
@@ -398,14 +441,14 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
                     wheel_msg.velocity_x = -max_speed;
                 }
                 wheel_pub.publish(wheel_msg);
-                ros::Duration(0.01).sleep();
+                loop_rate.sleep();
                 ros::spinOnce();
             }
             pid_z.init();
             msg_init();
             wheel_pub.publish(wheel_msg);
             ros::Duration(1).sleep();
-            while (E_x >= 645 || E_x <= 635)
+            while (E_x >= 330 || E_x <= 310)
             {
                 if (E_x == -1)
                 {
@@ -425,7 +468,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
                 }
                 wheel_pub.publish(wheel_msg);
                 ros::spinOnce();
-                ros::Duration(0.01).sleep();
+                loop_rate.sleep();
             }
             pid_x.init();
             msg_init();
@@ -460,14 +503,14 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
                     wheel_msg.velocity_x = -max_speed;
                 }
                 wheel_pub.publish(wheel_msg);
-                ros::Duration(0.01).sleep();
+                loop_rate.sleep();
                 ros::spinOnce();
             }
             pid_z.init();
             msg_init();
             wheel_pub.publish(wheel_msg);
             ros::Duration(1).sleep();
-            while (L_x >= 645 || L_x <= 635)
+            while (L_x >= 330 || L_x <= 310)
             {
                 if (L_x == -1)
                 {
@@ -487,7 +530,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
                 }
                 wheel_pub.publish(wheel_msg);
                 ros::spinOnce();
-                ros::Duration(0.01).sleep();
+                loop_rate.sleep();
             }
             pid_x.init();
             msg_init();
@@ -570,6 +613,21 @@ void first_level::robot_move(uint8_t direction, int distance)
     ros::Duration(0.05).sleep();
     robot_wait();
     msg_init();
+}
+
+void first_level::continue_back()
+{
+    double max_time = 3.0;
+    ros::Time startTime = ros::Time::now();
+    ros::Duration maxTime(max_time);
+    while(ros::Time::now() < startTime + maxTime)
+    {
+        wheel_msg.velocity_x = -0.35;
+        wheel_pub.publish(wheel_msg);
+    }
+    ros::Duration(1).sleep();
+    msg_init();
+    wheel_pub.publish(wheel_msg);
 }
 
 bool first_level::are_topics_ready(const std::vector<std::string> &query_topics)
