@@ -7,7 +7,7 @@
     <param name="/level_planner/test/delay" type="double" value="2.0" />
 
     <param name="/level_planner/level_code" type="int" value="2" />
-    <param name="/level_planner/step_delay" type="double" value="2.0" />
+    <param name="/level_planner/step_delay" type="double" value="4.0" />
 
     <param name="/level_planner/gain_x" type="double" value="1.0" />
     <param name="/level_planner/gain_y" type="double" value="1.0" />
@@ -21,15 +21,25 @@
 
     <param name="/level_planner/level_2/strategy" type="int" value="0" />
     <param name="/level_planner/level_2/max_time" type="double" value="15.0" />
+    <param name="/level_planner/level_2/single_max_time" type="double" value="5.0" />
     <param name="/level_planner/level_2/base_speed" type="double" value="0.25" />
     <param name="/level_planner/level_2/area_threshold" type="int" value="5000" />
-    <param name="/level_planner/level_2/pixel_threshold" type="int" value="3" />
-    <param name="/level_planner/level_2/angle_threshold" type="int" value="3" />
+
+    <param name="/level_planner/level_2/x_threshold" type="int" value="3" />
+    <param name="/level_planner/level_2/y_threshold" type="int" value="3" />
+    <param name="/level_planner/level_2/z_threshold" type="int" value="3" />
+
+    <param name="/level_planner/level_2/entry/pixel_x" type="int" value="300" />
 
     <param name="/level_planner/level_2/entry_color/min_area" type="int" value="500" />
-    <param name="/level_planner/level_2/entry_xy/p" type="double" value="0.0006" />
-    <param name="/level_planner/level_2/entry_xy/i" type="double" value="0.00004" />
-    <param name="/level_planner/level_2/entry_xy/d" type="double" value="0.000000" />
+
+    <param name="/level_planner/level_2/entry_x/p" type="double" value="0.0012" />
+    <param name="/level_planner/level_2/entry_x/i" type="double" value="0.00004" />
+    <param name="/level_planner/level_2/entry_x/d" type="double" value="0.000000" />
+
+    <param name="/level_planner/level_2/entry_y/p" type="double" value="0.0012" />
+    <param name="/level_planner/level_2/entry_y/i" type="double" value="0.00004" />
+    <param name="/level_planner/level_2/entry_y/d" type="double" value="0.000000" />
 
     <param name="/level_planner/level_2/entry_z/p" type="double" value="0.02" />
     <param name="/level_planner/level_2/entry_z/i" type="double" value="0.005" />
@@ -37,10 +47,14 @@
 
     <param name="/level_planner/level_3/strategy" type="int" value="0" />
 
-    <param name="/level_planner/xy_clamp_max" type="double" value="0.25" />
-    <param name="/level_planner/xy_clamp_min" type="double" value="-0.25" />
+    <param name="/level_planner/x_clamp_max" type="double" value="0.25" />
+    <param name="/level_planner/x_clamp_min" type="double" value="-0.25" />
 
-    <param name="/level_planner/z_clamp_max" type="double" value="0.73" />
-    <param name="/level_planner/z_clamp_min" type="double" value="-0.73" />
+    <param name="/level_planner/y_clamp_max" type="double" value="0.25" />
+    <param name="/level_planner/y_clamp_min" type="double" value="-0.25" />
+
+
+    <param name="/level_planner/z_clamp_max" type="double" value="0.74" />
+    <param name="/level_planner/z_clamp_min" type="double" value="-0.74" />
 
 </launch>

@@ -85,6 +85,7 @@ private:
 
     void forward_color(int color);
 
+    int get_x_offset(int color);
     int get_y_offset(int color);
     int get_z_offset(int color);
     double clamp(const double value, const double min, const double max);
