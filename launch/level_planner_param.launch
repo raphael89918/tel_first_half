@@ -21,7 +21,7 @@
 
     <param name="/level_planner/level_2/strategy" type="int" value="0" />
     <param name="/level_planner/level_2/max_time" type="double" value="15.0" />
-    <param name="/level_planner/level_2/single_max_time" type="double" value="5.0" />
+    <param name="/level_planner/level_2/single_max_time" type="double" value="10.0" />
     <param name="/level_planner/level_2/base_speed" type="double" value="0.25" />
     <param name="/level_planner/level_2/area_threshold" type="int" value="5000" />
 
