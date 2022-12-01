@@ -363,6 +363,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
                 break;
             }
             ROS_INFO("trace T");
+            startTime = ros::Time::now();
             while (T_z >= 255 || T_z <= 245 && ros::Time::now() < startTime + maxTime)
             {
                 if (T_z == 0)
@@ -389,6 +390,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
             msg_init();
             wheel_pub.publish(wheel_msg);
             ros::Duration(1).sleep();
+            startTime = ros::Time::now();
             while (T_x >= 330 || T_x <= 310 && ros::Time::now() < startTime + maxTime)
             {
                 if (T_x == -1)
@@ -425,6 +427,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
                 break;
             }
             ROS_INFO("trace E");
+            startTime = ros::Time::now();
             while (E_z >= 255 || E_z <= 245 && ros::Time::now() < startTime + maxTime)
             {
                 if (E_z == 0)
@@ -451,6 +454,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
             msg_init();
             wheel_pub.publish(wheel_msg);
             ros::Duration(1).sleep();
+            startTime = ros::Time::now();
             while (E_x >= 330 || E_x <= 310 && ros::Time::now() < startTime + maxTime)
             {
                 if (E_x == -1)
@@ -487,6 +491,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
                 break;
             }
             ROS_INFO("trace L");
+            startTime = ros::Time::now();
             while (L_z >= 255 || L_z <= 245 && ros::Time::now() < startTime + maxTime)
             {
                 if (L_z == 0)
@@ -513,6 +518,7 @@ void first_level::trace_target(uint8_t first, uint8_t second, uint8_t third)
             msg_init();
             wheel_pub.publish(wheel_msg);
             ros::Duration(1).sleep();
+            startTime = ros::Time::now();
             while (L_x >= 330 || L_x <= 310 && ros::Time::now() < startTime + maxTime)
             {
                 if (L_x == -1)
