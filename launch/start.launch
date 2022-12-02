@@ -1,7 +1,7 @@
 <launch>
 <arg name="level" default="1"/>
 <arg name="level_1" default="0"/>
-<arg name="level_2" default="0"/>
+<arg name="level_2" default="1"/>
 <arg name="level_3" default="0"/>
 <include file = "$(find tel_first_half)/launch/level_planner.launch"/>
     <param name="/level_planner/level_code" value="$(arg level)"/>

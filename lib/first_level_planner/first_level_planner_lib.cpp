@@ -90,17 +90,23 @@ void first_level::distance_strategy()
     ROS_INFO("far right");
     robot_far(right);
 
-    ROS_INFO("front 200");
+    ROS_INFO("left 15");
+    robot_move(left, 15);
+
+    ROS_INFO("front 220");
     robot_move(front, 200);
 
     ROS_INFO("far left");
     robot_far(left);
 
-    ROS_INFO("right 35");
-    robot_move(right, 35);
+    ROS_INFO("right 10");
+    robot_move(right, 10);
 
-    ROS_INFO("front 100");
-    robot_move(front, 100);
+    ROS_INFO("front 150");
+    robot_move(front, 150);
+
+    ROS_INFO("right 20");
+    robot_move(right, 20);
 
     ROS_INFO("end of level 1 distance");
 }

@@ -346,6 +346,11 @@ void LevelPlanner::level_2()
         level_2_vision_strategy();
         break;
     }
+    case LEVEL_2_GPIO:
+    {
+        level_2_gpio_strategy();
+        break;
+    } 
     case LEVEL_2_DISTANCE:
     {
         level_2_distance_strategy();
@@ -384,18 +389,21 @@ void LevelPlanner::level_2_vision_strategy()
 
     wheel_planner_msg_dist_xyz(140, 0, 0);
     ROS_INFO("FRONT");
-    wheel_planner_msg_dist_xyz(0, -37.5, 0);
+    ros::Duration(2.0).sleep();
+    wheel_planner_msg_dist_xyz(0, -47.5, 0);
     ROS_INFO("LEFT");
 
     entry_color(GROUND_GREEN);
     wheel_planner_msg_dist_xyz(125, 0, 0);
+    ros::Duration(2.0).sleep();
 
     ROS_INFO("FRONT");
-    wheel_planner_msg_dist_xyz(0, 35.5, 0);
+    wheel_planner_msg_dist_xyz(0, 30, 0);
     ROS_INFO("RIGHT");
 
     entry_color(GROUND_BLUE);
     wheel_planner_msg_dist_xyz(130, 0, 0);
+    ros::Duration(2.0).sleep();
 
     ROS_INFO("FRONT");
     wheel_planner_msg_dist_xyz(0, -15, 0);
@@ -410,13 +418,56 @@ void LevelPlanner::level_2_distance_strategy()
     wheel_planner_msg_dist_xyz(0, 20, 0);
 
     wheel_planner_msg_dist_xyz(140, 0, 0);
-    wheel_planner_msg_dist_xyz(0, -37.5, 0);
+    ros::Duration(2.0).sleep();
+    wheel_planner_msg_dist_xyz(0, -47.5, 0);
 
     wheel_planner_msg_dist_xyz(125, 0, 0);
-    wheel_planner_msg_dist_xyz(0, 35.5, 0);
+    ros::Duration(2.0).sleep();
+    wheel_planner_msg_dist_xyz(0, 30, 0);
 
     wheel_planner_msg_dist_xyz(130, 0, 0);
+    ros::Duration(2.0).sleep();
     wheel_planner_msg_dist_xyz(0, -15, 0);
+}
+
+void LevelPlanner::level_2_gpio_strategy()
+{
+    first_level second_level(m_nh);
+
+    second_level.init_pubsub();
+
+    ROS_INFO("go front 20");
+    second_level.robot_move(front, 20);
+
+    ROS_INFO("go to far right");
+    second_level.robot_far(right);
+
+    ROS_INFO("go left 10");
+    second_level.robot_move(left, 15);
+
+    ROS_INFO("go front 100");
+    second_level.robot_move(front, 130);
+
+    ROS_INFO("go to far left");
+    second_level.robot_far(left);
+
+    ROS_INFO("go right 10");
+    second_level.robot_move(right, 17);
+
+    ROS_INFO("go front 120");
+    second_level.robot_move(front, 135);
+
+    ROS_INFO("go to far right");
+    second_level.robot_far(right);
+
+    ROS_INFO("go left 10");
+    second_level.robot_move(left, 20);
+
+    ROS_INFO("go front 80");
+    second_level.robot_move(front, 130);
+
+    ROS_INFO("go left 50");
+    second_level.robot_move(left, 50);
 }
 
 void LevelPlanner::entry_color(int color)

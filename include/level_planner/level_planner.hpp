@@ -32,7 +32,8 @@ enum class LevelState
 enum Level_2_Strategy
 {
     LEVEL_2_VISION = 0,
-    LEVEL_2_DISTANCE = 1
+    LEVEL_2_GPIO = 1,
+    LEVEL_2_DISTANCE = 2
 };
 
 class LevelPlanner
@@ -75,6 +76,7 @@ private:
     void level_3();
 
     void level_2_vision_strategy();
+    void level_2_gpio_strategy();
     void level_2_distance_strategy();
 
     void entry_color(int color);
